@@ -1,8 +1,8 @@
 import { CategoryGrid } from "@/components/category-grid";
 import { EmptyState } from "@/components/empty-state";
 import { ProductGrid } from "@/components/product-card";
+import { PromoPersonaliza } from "@/components/promo-personaliza";
 import { SearchBox } from "@/components/search-box";
-import { VarianteRecordada } from "@/components/variante-recordada";
 import { getCategoriasConProductos, getDestacados } from "@/lib/catalog";
 
 export default async function Home() {
@@ -26,7 +26,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <VarianteRecordada />
+      <PromoPersonaliza />
 
       {destacados.length > 0 && (
         <section aria-labelledby="titulo-destacados">

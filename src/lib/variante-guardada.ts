@@ -24,13 +24,6 @@ export function guardarVariante(v: VarianteGuardada) {
   }
 }
 
-export function olvidarVariante() {
-  try {
-    localStorage.removeItem(CLAVE);
-    window.dispatchEvent(new Event(EVENTO));
-  } catch {}
-}
-
 function leerRaw(): string | null {
   try {
     return localStorage.getItem(CLAVE);

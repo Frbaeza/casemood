@@ -61,7 +61,9 @@ export default async function ProductoPage({ params, searchParams }: PageProps<"
 
   return (
     <div className="pt-3 pb-6">
-      <BackLink href="/">Volver al catálogo</BackLink>
+      <BackLink href={`/categoria/${producto.categoria.slug}`} historial>
+        Volver
+      </BackLink>
 
       <div className="mt-2">
         <ImageCarousel keys={producto.imagenes.map((i) => i.key)} alt={producto.nombre} />

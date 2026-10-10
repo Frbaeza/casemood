@@ -8,19 +8,40 @@ import { getDb } from "@/lib/db";
 import { formatCLP, imgUrl } from "@/lib/format";
 
 export default async function ProductosAdminPage({ searchParams }: PageProps<"/admin/productos">) {
-  const { q, categoria, pagina: paginaTexto } = await searchParams;
+  const { q, categoria, version, pagina: paginaTexto } = await searchParams;
   const pagina = leerPagina(paginaTexto);
   const texto = typeof q === "string" ? q.trim().slice(0, 80) : "";
   const categoriaId = typeof categoria === "string" && /^\d+$/.test(categoria) ? Number(categoria) : undefined;
 
+  const db = await getDb();
+  // Si la categoría tiene productos por modelo (ej. Carcasas), se puede filtrar también por iPhone.
+  const modelos = categoriaId
+    ? await db.modelo.findMany({
+        where: { variantes: { some: { productos: { some: { producto: { categoriaId } } } } } },
+        orderBy: [{ orden: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          nombre: true,
+          variantes: {
+            where: { productos: { some: { producto: { categoriaId } } } },
+            orderBy: [{ orden: "asc" }, { id: "asc" }],
+            select: { id: true, nombre: true },
+          },
+        },
+      })
+    : [];
+  const pedida = typeof version === "string" && /^\d+$/.test(version) ? Number(version) : undefined;
+  // Solo vale si es de la categoría elegida (al cambiar de categoría se descarta sola).
+  const varianteId = modelos.some((m) => m.variantes.some((v) => v.id === pedida)) ? pedida : undefined;
+
   const where: Prisma.ProductoWhereInput = {
     ...(categoriaId ? { categoriaId } : {}),
+    ...(varianteId ? { variantes: { some: { varianteId } } } : {}),
     ...(texto
       ? { AND: texto.split(/\s+/).map((p) => ({ nombre: { contains: p, mode: "insensitive" as const } })) }
       : {}),
   };
 
-  const db = await getDb();
   const [productos, categorias, total, encontrados] = await Promise.all([
     db.producto.findMany({
       where,
@@ -47,6 +68,7 @@ export default async function ProductosAdminPage({ searchParams }: PageProps<"/a
     const sp = new URLSearchParams();
     if (texto) sp.set("q", texto);
     if (categoriaId) sp.set("categoria", String(categoriaId));
+    if (varianteId) sp.set("version", String(varianteId));
     if (p > 1) sp.set("pagina", String(p));
     return sp.size ? `/admin/productos?${sp}` : "/admin/productos";
   };
@@ -95,6 +117,30 @@ export default async function ProductosAdminPage({ searchParams }: PageProps<"/a
             </option>
           ))}
         </AutoSubmitSelect>
+        {modelos.length > 0 && (
+          <>
+            <label htmlFor="version" className="sr-only">
+              Filtrar por modelo de iPhone
+            </label>
+            <AutoSubmitSelect
+              id="version"
+              name="version"
+              defaultValue={varianteId ?? ""}
+              className="min-h-12 w-full rounded-xl border-2 border-line bg-white px-3 text-base"
+            >
+              <option value="">Todos los modelos de iPhone</option>
+              {modelos.map((m) => (
+                <optgroup key={m.id} label={m.nombre}>
+                  {m.variantes.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.nombre}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </AutoSubmitSelect>
+          </>
+        )}
         {filtrando && (
           <Link href="/admin/productos" className="inline-flex min-h-12 items-center font-semibold text-brand">
             Quitar filtros
@@ -119,14 +165,14 @@ export default async function ProductosAdminPage({ searchParams }: PageProps<"/a
                   p.activo ? "border-line" : "border-dashed border-line opacity-60"
                 }`}
               >
-                <div className="relative aspect-square w-full bg-surface">
+                <div className="relative aspect-3/4 w-full overflow-hidden bg-surface">
                   {p.imagenes[0] ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={imgUrl(p.imagenes[0].key)}
                       alt=""
                       width={300}
-                      height={300}
+                      height={400}
                       loading="lazy"
                       className="h-full w-full object-cover"
                     />

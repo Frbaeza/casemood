@@ -1,6 +1,7 @@
 import { cache } from "react";
 import type { Prisma } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
+import { CARCASAS_DISPONIBLES } from "@/lib/carcasas-disponibles";
 import type { Orden } from "@/lib/catalog-orden";
 import type { RegionCotizable } from "@/lib/envios";
 
@@ -211,6 +212,25 @@ export const getCategoriasConProductos = cache(async () => {
   }));
 });
 
+/** Versiones de iPhone que tienen plantilla para "Diseña tu carcasa", agrupadas por modelo. */
+export const getVariantesPersonalizables = cache(async () => {
+  const db = await getDb();
+  const modelos = await db.modelo.findMany({
+    where: { activo: true },
+    orderBy: [{ orden: "asc" }, { id: "asc" }],
+    select: {
+      nombre: true,
+      slug: true,
+      variantes: {
+        where: { activo: true, slug: { in: [...CARCASAS_DISPONIBLES] } },
+        orderBy: [{ orden: "asc" }, { id: "asc" }],
+        select: { id: true, nombre: true, slug: true },
+      },
+    },
+  });
+  return modelos.filter((m) => m.variantes.length > 0);
+});
+
 export const POR_PAGINA = 48;
 
 /** Productos activos de una categoría (de cualquier modelo), o de todas si no se indica, paginados. */
@@ -256,7 +276,7 @@ export const getProducto = cache(async (slug: string) => {
       slug: true,
       descripcion: true,
       precio: true,
-      categoria: { select: { nombre: true } },
+      categoria: { select: { nombre: true, slug: true } },
       imagenes: { orderBy: { orden: "asc" }, select: { key: true } },
       variantes: {
         where: { variante: { activo: true, modelo: { activo: true } } },

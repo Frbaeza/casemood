@@ -8,6 +8,7 @@ import { ModelGrid } from "@/components/model-grid";
 import { leerPagina, Paginacion } from "@/components/paginacion";
 import { ProductGrid } from "@/components/product-card";
 import { OrdenSelect } from "@/components/orden-select";
+import { PromoPersonaliza } from "@/components/promo-personaliza";
 import { SearchBox } from "@/components/search-box";
 import { getCategoriasConProductos, getModelos, getProductosDeCategoria } from "@/lib/catalog";
 import { leerOrden } from "@/lib/catalog-orden";
@@ -50,6 +51,8 @@ export default async function CategoriaPage({ params, searchParams }: PageProps<
       <SearchBox key={slug} categorias={categorias} categoriaActiva={slug} />
 
       <FiltroActivo nombre={categoria.nombre} quitarHref="/" />
+
+      {slug.startsWith("carcasas") && pagina === 1 && <PromoPersonaliza />}
 
       {modelos.length > 0 && (
         <section aria-labelledby="titulo-modelos" className="pt-2 pb-4">

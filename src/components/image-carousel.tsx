@@ -12,7 +12,7 @@ export function ImageCarousel({ keys, alt }: { keys: string[]; alt: string }) {
 
   if (total === 0) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-2xl bg-surface text-lg text-ink-soft">
+      <div className="flex aspect-3/4 w-full items-center justify-center rounded-2xl bg-surface text-lg text-ink-soft">
         Sin fotos
       </div>
     );
@@ -36,7 +36,7 @@ export function ImageCarousel({ keys, alt }: { keys: string[]; alt: string }) {
       <div
         ref={pista}
         onScroll={alDeslizar}
-        className="flex aspect-square w-full snap-x snap-mandatory overflow-x-auto rounded-2xl bg-surface [scrollbar-width:none]"
+        className="flex aspect-3/4 w-full snap-x snap-mandatory overflow-x-auto rounded-2xl bg-surface [scrollbar-width:none]"
         aria-roledescription="carrusel"
         aria-label={`Fotos de ${alt}`}
       >
@@ -52,7 +52,7 @@ export function ImageCarousel({ keys, alt }: { keys: string[]; alt: string }) {
               src={imgUrl(key)}
               alt={i === 0 ? alt : `${alt}, foto ${i + 1}`}
               width={1200}
-              height={1200}
+              height={1600}
               loading={i === 0 ? "eager" : "lazy"}
               fetchPriority={i === 0 ? "high" : "auto"}
               decoding="async"

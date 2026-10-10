@@ -11,15 +11,15 @@ export function ProductCard({ producto, varianteId }: { producto: ProductoTarjet
       href={href}
       className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-sm active:scale-[0.98] transition-transform"
     >
-      <div className="aspect-square w-full bg-surface">
+      <div className="aspect-3/4 w-full overflow-hidden bg-surface">
         {imagen ? (
-          // Tamaño fijo (aspect-square) para que la grilla no salte mientras carga.
+          // Tamaño fijo (3:4, como las fotos de la tienda) para que la grilla no salte mientras carga.
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={imgUrl(imagen.key)}
             alt={producto.nombre}
             width={600}
-            height={600}
+            height={800}
             loading="lazy"
             decoding="async"
             className="h-full w-full object-cover"
@@ -53,7 +53,7 @@ export function ProductGridSkeleton({ cantidad = 4 }: { cantidad?: number }) {
     <ul className="grid grid-cols-2 gap-3" aria-hidden>
       {Array.from({ length: cantidad }, (_, i) => (
         <li key={i} className="overflow-hidden rounded-2xl border border-line">
-          <div className="aspect-square animate-pulse bg-surface" />
+          <div className="aspect-3/4 animate-pulse bg-surface" />
           <div className="space-y-2 p-3">
             <div className="h-4 animate-pulse rounded bg-surface" />
             <div className="mx-auto h-6 w-2/3 animate-pulse rounded bg-surface" />
