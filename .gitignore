@@ -54,3 +54,6 @@ next-env.d.ts
 # importación desde Glide (datos y fotos descargadas)
 /.glide-import/
 
+
+# herramientas locales
+/.claude/

@@ -29,7 +29,7 @@
       "bucket_name": "casemood-imagenes"
     }
   ],
-  // Variables públicas. Los secretos (DATABASE_URL, AUTH_*, ADMIN_EMAILS)
+  // Variables públicas. Los secretos (DATABASE_URL, AUTH_*, ADMIN_EMAILS, WHATSAPP_NUMBER)
   // se cargan con `wrangler secret put` y en local desde .dev.vars.
   "vars": {
     "STORE_NAME": "Casemood",
