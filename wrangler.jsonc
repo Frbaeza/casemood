@@ -1,0 +1,41 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "casemood",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // OpenNext no minifica el servidor de Next; minificar con Wrangler deja el Worker
+  // en ~2,4 MiB gzip (vs ~2,6 MiB) dentro del límite de 3 MiB del plan gratuito.
+  "minify": true,
+  // Dominios propios (Cloudflare crea el DNS y el certificado). www redirige a casemood.cl (next.config.ts).
+  "routes": [
+    { "pattern": "casemood.cl", "custom_domain": true },
+    { "pattern": "www.casemood.cl", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "casemood"
+    }
+  ],
+  "r2_buckets": [
+    {
+      // Imágenes de productos, servidas por la ruta /img/[key].
+      "binding": "R2_IMAGES",
+      "bucket_name": "casemood-imagenes"
+    }
+  ],
+  // Variables públicas. Los secretos (DATABASE_URL, AUTH_*, ADMIN_EMAILS)
+  // se cargan con `wrangler secret put` y en local desde .dev.vars.
+  "vars": {
+    "STORE_NAME": "Casemood",
+    "INSTAGRAM_USERNAME": "casemood_.cl"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

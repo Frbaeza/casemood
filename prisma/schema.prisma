@@ -1,0 +1,124 @@
+// Cliente para la app (Cloudflare Workers). "small" reduce el WASM del compilador de queries
+// para caber holgado en el límite de 3 MiB del plan gratuito.
+generator client {
+  provider      = "prisma-client"
+  output        = "../src/generated/prisma"
+  runtime       = "workerd"
+  engineType    = "client"
+  compilerBuild = "small"
+}
+
+// Cliente para scripts en Node (seed). No se incluye en el Worker.
+generator node {
+  provider   = "prisma-client"
+  output     = "../src/generated/prisma-node"
+  runtime    = "nodejs"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Modelo {
+  id        Int        @id @default(autoincrement())
+  nombre    String // "iPhone 11"
+  slug      String     @unique
+  orden     Int        @default(0)
+  activo    Boolean    @default(true)
+  variantes Variante[]
+  creadoEn  DateTime   @default(now())
+
+  @@index([orden])
+}
+
+model Variante {
+  id        Int                @id @default(autoincrement())
+  nombre    String // "iPhone 11 Pro Max"
+  slug      String // "iphone-11-pro-max"
+  orden     Int                @default(0)
+  activo    Boolean            @default(true)
+  modeloId  Int
+  modelo    Modelo             @relation(fields: [modeloId], references: [id], onDelete: Restrict)
+  productos ProductoVariante[]
+
+  @@unique([modeloId, slug])
+  @@index([modeloId, orden])
+}
+
+model Categoria {
+  id        Int        @id @default(autoincrement())
+  nombre    String
+  slug      String     @unique
+  orden     Int        @default(0)
+  imagenKey String? // foto de portada en R2 (opcional; si falta se usa la de un producto)
+  productos Producto[]
+}
+
+model Producto {
+  id            Int                @id @default(autoincrement())
+  nombre        String
+  slug          String             @unique
+  descripcion   String             @default("")
+  precio        Int // CLP, entero
+  activo        Boolean            @default(true)
+  destacado     Boolean            @default(false)
+  categoriaId   Int
+  categoria     Categoria          @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  imagenes      ImagenProducto[]
+  variantes     ProductoVariante[] // vacío = "Universal"
+  creadoEn      DateTime           @default(now())
+  actualizadoEn DateTime           @updatedAt
+
+  @@index([activo, categoriaId])
+  @@index([activo, destacado])
+}
+
+model ImagenProducto {
+  id         Int      @id @default(autoincrement())
+  key        String   @unique // key en R2, ej. "p/123/abc.webp"
+  orden      Int      @default(0)
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+
+  @@index([productoId, orden])
+}
+
+model ProductoVariante {
+  productoId Int
+  varianteId Int
+  disponible Boolean  @default(true)
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  variante   Variante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
+
+  @@id([productoId, varianteId])
+  @@index([varianteId, disponible])
+}
+
+// ---------- Envíos (cotizador del footer, administrable hasta tener la API de Blue Express) ----------
+
+/// Zona de tarifa de Blue Express (ej. "Zona Santiago"). Precios en CLP por talla del paquete.
+model ZonaEnvio {
+  id           Int          @id @default(autoincrement())
+  nombre       String
+  plazo        String       @default("") // sin uso: no mostramos plazos de entrega
+  orden        Int          @default(0)
+  puntoXS      Int          @default(0) // retiro en Punto Blue Express
+  puntoS       Int          @default(0)
+  puntoM       Int          @default(0)
+  puntoL       Int          @default(0)
+  domicilioXS  Int          @default(0) // entrega a domicilio
+  domicilioS   Int          @default(0)
+  domicilioM   Int          @default(0)
+  domicilioL   Int          @default(0)
+  regiones     RegionEnvio[]
+}
+
+/// Región de Chile y la zona de tarifa que le corresponde.
+model RegionEnvio {
+  id     Int        @id @default(autoincrement())
+  nombre String     @unique
+  orden  Int        @default(0) // norte a sur
+  zonaId Int?
+  zona   ZonaEnvio? @relation(fields: [zonaId], references: [id], onDelete: SetNull)
+}

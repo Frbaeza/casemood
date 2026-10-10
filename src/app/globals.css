@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* Paleta de Casemood (tomada del logo): naranjo de marca, crema y un toque rosado.
+   "brand" es un naranjo más oscuro que el del logo para que el texto blanco
+   sobre botones cumpla contraste AA; "orange" es el naranjo exacto del logo. */
+@theme {
+  --color-orange: #d85722;
+  --color-brand: #b8461b;
+  --color-brand-dark: #963815;
+  --color-brand-soft: #fdeee6;
+  --color-cream: #f6f4f0;
+  --color-cream-dark: #ece6dc;
+  --color-blush: #f4c9c4;
+  --color-ink: #23201d;
+  --color-ink-soft: #5b5650;
+  --color-line: #e6e1d9;
+  --color-surface: #f6f4f0;
+  --color-whatsapp: #1f9d55;
+  --color-danger: #b42318;
+
+  --font-display: var(--font-fredoka), ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+  --header-h: 72px;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1rem; /* 16 px mínimo */
+  line-height: 1.5;
+}
+
+/* Si la página tiene el botón fijo de WhatsApp, el footer deja espacio para no quedar tapado. */
+body:has([data-fixed-cta]) footer {
+  padding-bottom: 8.5rem;
+}
+
+/* Foco visible y grueso para navegación con teclado */
+:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 2px;
+}

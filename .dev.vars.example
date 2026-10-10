@@ -1,0 +1,25 @@
+# Copia este archivo como .dev.vars y completa los valores.
+# .dev.vars NO se sube a git. En producción usa `npx wrangler secret put NOMBRE`.
+
+# Le indica a OpenNext qué archivos .env de Next.js cargar en local.
+NEXTJS_ENV=development
+
+# Conexión a Neon (usa la cadena "pooled" con sslmode=require).
+DATABASE_URL=postgresql://usuario:clave@ep-xxxx-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+
+# Auth.js. Genera AUTH_SECRET con: npx auth secret   (o cualquier string aleatorio de 32+ bytes)
+AUTH_SECRET=cambia-esto-por-un-secreto-largo-y-aleatorio
+AUTH_GOOGLE_ID=xxxxxxxx.apps.googleusercontent.com
+AUTH_GOOGLE_SECRET=GOCSPX-xxxxxxxx
+
+# Correos que pueden entrar al panel /admin, separados por coma.
+ADMIN_EMAILS=tu-correo@gmail.com,otra-persona@gmail.com
+
+# Número de WhatsApp en formato internacional, sin "+" ni espacios (Chile: 569XXXXXXXX).
+WHATSAPP_NUMBER=56900000000
+
+# Nombre de la tienda que se muestra en el sitio.
+STORE_NAME=Casemood
+
+# Usuario de Instagram sin @ (ej. casemood_.cl).
+INSTAGRAM_USERNAME=casemood_.cl
