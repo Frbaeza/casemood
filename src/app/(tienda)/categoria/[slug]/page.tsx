@@ -11,6 +11,7 @@ import { OrdenSelect } from "@/components/orden-select";
 import { PromoPersonaliza } from "@/components/promo-personaliza";
 import { SearchBox } from "@/components/search-box";
 import { getCategoriasConProductos, getModelos, getProductosDeCategoria } from "@/lib/catalog";
+import { getTienda } from "@/lib/configuracion";
 import { leerOrden } from "@/lib/catalog-orden";
 
 export async function generateMetadata({ params }: PageProps<"/categoria/[slug]">): Promise<Metadata> {
@@ -25,7 +26,7 @@ export default async function CategoriaPage({ params, searchParams }: PageProps<
   const pagina = leerPagina(paginaTexto);
   const orden = leerOrden(ordenTexto);
 
-  const categorias = await getCategoriasConProductos();
+  const [categorias, tienda] = await Promise.all([getCategoriasConProductos(), getTienda()]);
   const categoria = categorias.find((c) => c.slug === slug);
   if (!categoria) notFound();
 
@@ -52,7 +53,7 @@ export default async function CategoriaPage({ params, searchParams }: PageProps<
 
       <FiltroActivo nombre={categoria.nombre} quitarHref="/" />
 
-      {slug.startsWith("carcasas") && pagina === 1 && <PromoPersonaliza />}
+      {slug.startsWith("carcasas") && pagina === 1 && tienda.mostrarDisenador && <PromoPersonaliza />}
 
       {modelos.length > 0 && (
         <section aria-labelledby="titulo-modelos" className="pt-2 pb-4">

@@ -5,8 +5,3 @@ export async function getEnv(): Promise<CloudflareEnv> {
   const { env } = await getCloudflareContext({ async: true });
   return env;
 }
-
-export async function getStoreName(): Promise<string> {
-  const env = await getEnv();
-  return env.STORE_NAME?.trim() || "Casemood";
-}

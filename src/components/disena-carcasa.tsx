@@ -89,7 +89,7 @@ async function cargarFoto(archivo: File): Promise<Foto> {
 }
 
 /** Imagen para compartir: la carcasa sobre fondo claro con el nombre del modelo. */
-async function crearImagen(c: Contorno, foto: Foto, v: Vista, modelo: string): Promise<File> {
+async function crearImagen(c: Contorno, foto: Foto, v: Vista, modelo: string, tienda: string): Promise<File> {
   const { ancho, alto } = marco(c);
   const pie = 90;
   const k = (ALTO_IMAGEN - pie) / alto;
@@ -104,13 +104,13 @@ async function crearImagen(c: Contorno, foto: Foto, v: Vista, modelo: string): P
   ctx.fillStyle = "#23201d";
   ctx.textAlign = "center";
   ctx.font = "600 34px system-ui, sans-serif";
-  ctx.fillText(`${modelo} · Casemood`, lienzo.width / 2, ALTO_IMAGEN - pie / 2 + 12);
+  ctx.fillText(`${modelo} · ${tienda}`, lienzo.width / 2, ALTO_IMAGEN - pie / 2 + 12);
   const blob = await new Promise<Blob | null>((ok) => lienzo.toBlob(ok, "image/jpeg", 0.9));
   if (!blob) throw new Error("No se pudo crear la imagen");
   return new File([blob], `carcasa-${modelo.toLowerCase().replace(/\s+/g, "-")}.jpg`, { type: "image/jpeg" });
 }
 
-export function DisenaCarcasa({ modelos, whatsapp }: { modelos: Modelo[]; whatsapp: string }) {
+export function DisenaCarcasa({ modelos, whatsapp, tienda }: { modelos: Modelo[]; whatsapp: string; tienda: string }) {
   const guardada = useVarianteGuardada();
   const variantes = modelos.flatMap((m) => m.variantes.map((v) => ({ ...v, modeloSlug: m.slug })));
   const [elegida, setElegida] = useState<string | null>(null);
@@ -163,7 +163,7 @@ export function DisenaCarcasa({ modelos, whatsapp }: { modelos: Modelo[]; whatsa
     if (!contorno || !foto || !variante) return;
     let vigente = true;
     const t = setTimeout(() => {
-      crearImagen(contorno, foto, vista, variante.nombre).then((f) => {
+      crearImagen(contorno, foto, vista, variante.nombre, tienda).then((f) => {
         if (vigente) archivoRef.current = f;
       });
     }, 250);
@@ -171,7 +171,7 @@ export function DisenaCarcasa({ modelos, whatsapp }: { modelos: Modelo[]; whatsa
       vigente = false;
       clearTimeout(t);
     };
-  }, [contorno, foto, vista, variante]);
+  }, [contorno, foto, vista, variante, tienda]);
 
   function elegirVariante(nuevo: string) {
     setElegida(nuevo);
@@ -235,14 +235,14 @@ export function DisenaCarcasa({ modelos, whatsapp }: { modelos: Modelo[]; whatsa
     punteros.current.delete(e.pointerId);
   }
 
-  const mensaje = `Hola Casemood, quiero una carcasa personalizada para ${variante?.nombre ?? "mi iPhone"}. Te envío la vista previa de mi diseño y la foto original.`;
+  const mensaje = `Hola ${tienda}, quiero una carcasa personalizada para ${variante?.nombre ?? "mi iPhone"}. Te envío la vista previa de mi diseño y la foto original.`;
 
   async function compartir() {
     if (!contorno || !foto || !variante) return;
     setAviso("");
     setCompartiendo(true);
     try {
-      const archivo = archivoRef.current ?? (await crearImagen(contorno, foto, vista, variante.nombre));
+      const archivo = archivoRef.current ?? (await crearImagen(contorno, foto, vista, variante.nombre, tienda));
       const datos = { files: [archivo], text: mensaje };
       if (navigator.canShare?.(datos)) {
         try {
@@ -384,7 +384,7 @@ export function DisenaCarcasa({ modelos, whatsapp }: { modelos: Modelo[]; whatsa
           4. Envíanos tu diseño
         </h2>
         <p className="mt-1 text-base text-ink-soft">
-          Comparte la vista previa por WhatsApp con Casemood. Después mándanos la foto original en el mismo chat para
+          Comparte la vista previa por WhatsApp con {tienda}. Después mándanos la foto original en el mismo chat para
           imprimirla en buena calidad.
         </p>
         <div className="mt-4 space-y-3">
@@ -404,7 +404,7 @@ export function DisenaCarcasa({ modelos, whatsapp }: { modelos: Modelo[]; whatsa
             className={`${boton} w-full gap-2`}
           >
             <IconWhatsApp className="h-5 w-5 text-whatsapp" />
-            Abrir el chat de Casemood
+            Abrir el chat de {tienda}
           </a>
         </div>
         {aviso && (
@@ -413,7 +413,7 @@ export function DisenaCarcasa({ modelos, whatsapp }: { modelos: Modelo[]; whatsa
           </p>
         )}
         <p className="mt-3 text-sm text-ink-soft">
-          ¿No encuentras a Casemood al compartir? Abre el chat con el segundo botón y adjunta la imagen desde tu galería.
+          ¿No encuentras a {tienda} al compartir? Abre el chat con el segundo botón y adjunta la imagen desde tu galería.
         </p>
       </section>
     </div>

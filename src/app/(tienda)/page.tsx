@@ -4,9 +4,10 @@ import { ProductGrid } from "@/components/product-card";
 import { PromoPersonaliza } from "@/components/promo-personaliza";
 import { SearchBox } from "@/components/search-box";
 import { getCategoriasConProductos, getDestacados } from "@/lib/catalog";
+import { getTienda } from "@/lib/configuracion";
 
 export default async function Home() {
-  const [categorias, destacados] = await Promise.all([getCategoriasConProductos(), getDestacados()]);
+  const [categorias, destacados, tienda] = await Promise.all([getCategoriasConProductos(), getDestacados(), getTienda()]);
 
   return (
     <div className="space-y-8 pt-5">
@@ -26,7 +27,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <PromoPersonaliza />
+      {tienda.mostrarDisenador && <PromoPersonaliza />}
 
       {destacados.length > 0 && (
         <section aria-labelledby="titulo-destacados">

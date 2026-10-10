@@ -3,20 +3,17 @@ import { CotizadorEnvio } from "@/components/cotizador-envio";
 import { IconChevronRight, IconInstagram, IconPhone, IconSearch, IconWhatsApp } from "@/components/icons";
 import { whatsappUrl } from "@/lib/format";
 import type { RegionCotizable } from "@/lib/envios";
+import type { Tienda } from "@/lib/tienda";
 
 export function SiteFooter({
-  storeName,
-  whatsapp,
-  instagram,
+  tienda,
   regionesEnvio = [],
 }: {
-  storeName: string;
-  whatsapp: string;
-  /** Usuario sin @, ej. "casemood_.cl". */
-  instagram?: string;
-  /** Tarifas para el cotizador de envío (admin → Envíos). */
+  tienda: Tienda;
+  /** Tarifas para el cotizador de envío (admin → Envíos); vacío = no se muestra. */
   regionesEnvio?: RegionCotizable[];
 }) {
+  const { nombre: storeName, whatsapp, instagram } = tienda;
   const anio = new Date().getFullYear();
 
   return (
@@ -30,7 +27,7 @@ export function SiteFooter({
         <div className="flex items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo-v2-160.png"
+            src={tienda.logo}
             alt={`Logo de ${storeName}`}
             width={80}
             height={80}
@@ -39,7 +36,7 @@ export function SiteFooter({
           />
           <div>
             <p className="font-display text-3xl leading-none font-bold">{storeName}</p>
-            <p className="mt-1.5 text-base text-white/90">Carcasas y accesorios para iPhone</p>
+            <p className="mt-1.5 text-base text-white/90">{tienda.frase} para iPhone</p>
           </div>
         </div>
 
@@ -71,7 +68,7 @@ export function SiteFooter({
           {instagram && <p className="mt-2 text-center text-base font-semibold text-ink-soft">@{instagram}</p>}
         </div>
 
-        <CotizadorEnvio regiones={regionesEnvio} />
+        <CotizadorEnvio regiones={regionesEnvio} comunaOrigen={tienda.comunaOrigen} />
 
         <nav aria-label="Enlaces del sitio" className="mt-6">
           <ul className="divide-y divide-white/25 overflow-hidden rounded-2xl bg-white/10">

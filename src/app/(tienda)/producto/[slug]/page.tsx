@@ -4,7 +4,7 @@ import { BackLink } from "@/components/back-link";
 import { ImageCarousel } from "@/components/image-carousel";
 import { ProductInquiry, type GrupoCompatibilidad } from "@/components/product-inquiry";
 import { getProducto } from "@/lib/catalog";
-import { getEnv, getStoreName } from "@/lib/env";
+import { getTienda } from "@/lib/configuracion";
 import { formatCLP, imgUrl } from "@/lib/format";
 
 function resumen(texto: string, max = 160) {
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps<"/producto/[slug]">
   const producto = await getProducto(slug);
   if (!producto) return {};
 
-  const storeName = await getStoreName();
+  const { nombre: storeName } = await getTienda();
   const descripcion = resumen(producto.descripcion) || `${producto.nombre} a ${formatCLP(producto.precio)} en ${storeName}.`;
   const imagen = producto.imagenes[0];
 
@@ -44,7 +44,7 @@ export default async function ProductoPage({ params, searchParams }: PageProps<"
   const producto = await getProducto(slug);
   if (!producto) notFound();
 
-  const env = await getEnv();
+  const tienda = await getTienda();
   const varianteDesdeUrl = typeof v === "string" && /^\d+$/.test(v) ? Number(v) : undefined;
 
   // Agrupar variantes por modelo (ya vienen ordenadas por modelo y variante).
@@ -80,7 +80,7 @@ export default async function ProductoPage({ params, searchParams }: PageProps<"
       <ProductInquiry
         producto={producto.nombre}
         grupos={grupos}
-        whatsapp={env.WHATSAPP_NUMBER}
+        whatsapp={tienda.whatsapp}
         varianteDesdeUrl={varianteDesdeUrl}
       />
     </div>

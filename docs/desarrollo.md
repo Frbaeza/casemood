@@ -22,6 +22,9 @@ En local se leen desde `.dev.vars` (copia `.dev.vars.example`). En producción:
 | `STORE_NAME` | var | Nombre de la tienda (en `wrangler.jsonc`). |
 | `INSTAGRAM_USERNAME` | var | Usuario de Instagram sin `@` (en `wrangler.jsonc`). |
 
+Nombre, WhatsApp e Instagram se pueden cambiar después en admin → Tienda (tabla `Configuracion`); estas variables
+quedan como valores de respaldo mientras no se guarde nada ahí.
+
 Los secretos se cargan en Cloudflare así (repite para cada uno):
 
 ```bash
@@ -116,6 +119,7 @@ y su caja en puntos, y regenera `src/lib/carcasas-disponibles.ts`. Para agregar 
 | `/admin/modelos` | Modelos y versiones: crear, renombrar, mostrar u ocultar, ordenar, eliminar. |
 | `/admin/categorias` | Crear, renombrar, ordenar, foto de portada, eliminar (bloqueado si tiene productos). |
 | `/admin/envios` | Tarifas por zona (Punto Blue Express y domicilio, tallas XS y S) y zona de cada región. |
+| `/admin/tienda` | Logo, color principal (6 paletas, naranjo por defecto), nombre y frase, WhatsApp e Instagram, aviso destacado, mostrar u ocultar el cotizador y el diseñador, y comuna de origen de los envíos. |
 | `POST /api/admin/imagenes` | Sube una foto a R2 (`p/<uuid>.webp`). |
 
 Seguridad en tres capas:

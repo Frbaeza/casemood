@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { BackLink } from "@/components/back-link";
 import { DisenaCarcasa } from "@/components/disena-carcasa";
 import { EmptyState } from "@/components/empty-state";
 import { getVariantesPersonalizables } from "@/lib/catalog";
-import { getEnv } from "@/lib/env";
+import { getTienda } from "@/lib/configuracion";
 
 export const metadata: Metadata = {
   title: "Diseña tu carcasa",
@@ -11,7 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default async function PersonalizaPage() {
-  const [modelos, env] = await Promise.all([getVariantesPersonalizables(), getEnv()]);
+  const [modelos, tienda] = await Promise.all([getVariantesPersonalizables(), getTienda()]);
+  if (!tienda.mostrarDisenador) notFound();
 
   return (
     <div className="space-y-6 pt-3 pb-8">
@@ -27,7 +29,7 @@ export default async function PersonalizaPage() {
       {modelos.length === 0 ? (
         <EmptyState titulo="Pronto podrás diseñar tu carcasa aquí." />
       ) : (
-        <DisenaCarcasa modelos={modelos} whatsapp={env.WHATSAPP_NUMBER} />
+        <DisenaCarcasa modelos={modelos} whatsapp={tienda.whatsapp} tienda={tienda.nombre} />
       )}
     </div>
   );

@@ -43,6 +43,8 @@ que la dueña administre todo desde el celular, sin depender de nadie.
   categoría y compatibilidad por modelo con disponibilidad.
 - Filtros por categoría y por modelo de iPhone, vista en cuadrícula igual a la del catálogo.
 - Modelos, versiones, categorías (con foto de portada) y tarifas de envío por zona, todo editable.
+- **Configuración de la tienda** sin tocar código: logo, color principal (6 paletas accesibles, el naranjo de la marca
+  por defecto), nombre, WhatsApp, Instagram, un aviso destacado y qué secciones mostrar.
 - Acceso solo con Google y solo para los correos autorizados.
 
 <p align="center">

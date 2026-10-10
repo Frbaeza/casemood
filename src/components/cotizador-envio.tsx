@@ -5,7 +5,7 @@ import { formatCLP } from "@/lib/format";
 import { TALLAS, type RegionCotizable, type Talla } from "@/lib/envios";
 
 /** "¿Cuánto cuesta el envío?" — tarifas fijas por zona, administradas en admin → Envíos. */
-export function CotizadorEnvio({ regiones }: { regiones: RegionCotizable[] }) {
+export function CotizadorEnvio({ regiones, comunaOrigen }: { regiones: RegionCotizable[]; comunaOrigen: string }) {
   const [regionId, setRegionId] = useState("");
   const [talla, setTalla] = useState<Talla>("XS");
   const region = regiones.find((r) => String(r.id) === regionId);
@@ -20,7 +20,7 @@ export function CotizadorEnvio({ regiones }: { regiones: RegionCotizable[] }) {
       <h2 id="titulo-envio" className="font-display text-2xl leading-tight font-semibold">
         ¿Cuánto cuesta el envío?
       </h2>
-      <p className="mt-1 text-base text-ink-soft">Enviamos por Blue Express desde Maipú a todo Chile.</p>
+      <p className="mt-1 text-base text-ink-soft">Enviamos por Blue Express desde {comunaOrigen} a todo Chile.</p>
 
       <div className="mt-4 space-y-3">
         <div>

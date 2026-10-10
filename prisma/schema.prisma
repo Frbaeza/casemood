@@ -122,3 +122,21 @@ model RegionEnvio {
   zonaId Int?
   zona   ZonaEnvio? @relation(fields: [zonaId], references: [id], onDelete: SetNull)
 }
+
+/// Configuración de la tienda editable en admin → Tienda (una sola fila, id 1).
+/// Lo que quede en null usa el valor por defecto (o la variable de entorno, en contacto).
+model Configuracion {
+  id               Int      @id @default(1)
+  nombre           String   @default("Casemood")
+  frase            String   @default("Carcasas y accesorios")
+  color            String   @default("naranjo") // clave de PALETAS (src/lib/tienda.ts)
+  logoKey          String? // logo en R2; null = logo original
+  whatsapp         String? // null = WHATSAPP_NUMBER
+  instagram        String? // null = INSTAGRAM_USERNAME
+  avisoActivo      Boolean  @default(false)
+  avisoTexto       String   @default("")
+  mostrarCotizador Boolean  @default(true)
+  mostrarDisenador Boolean  @default(true)
+  comunaOrigen     String   @default("Maipú")
+  actualizadoEn    DateTime @updatedAt
+}

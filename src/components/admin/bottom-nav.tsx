@@ -44,6 +44,16 @@ const SECCIONES = [
       </>
     ),
   },
+  {
+    href: "/admin/tienda",
+    label: "Tienda",
+    icono: (
+      <>
+        <path d="M4 10h16l-1.5-5h-13zM5 10v9h14v-9" />
+        <path d="M10 19v-5h4v5" />
+      </>
+    ),
+  },
 ];
 
 export function BottomNav() {
@@ -53,7 +63,7 @@ export function BottomNav() {
       aria-label="Secciones del panel"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white pb-[env(safe-area-inset-bottom)]"
     >
-      <ul className="mx-auto grid max-w-[480px] grid-cols-4">
+      <ul className="mx-auto grid max-w-[480px] grid-cols-5">
         {SECCIONES.map((s) => {
           const activa = pathname.startsWith(s.href);
           return (
@@ -65,7 +75,7 @@ export function BottomNav() {
                   activa ? "text-brand" : "text-ink-soft"
                 }`}
               >
-                <span className={`rounded-full px-4 py-1 ${activa ? "bg-brand-soft" : ""}`}>
+                <span className={`rounded-full px-3 py-1 ${activa ? "bg-brand-soft" : ""}`}>
                   <svg
                     width="24"
                     height="24"

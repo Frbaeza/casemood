@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
+import { getTienda } from "@/lib/configuracion";
 import { getAdminEmail } from "@/lib/admin-auth";
 
 export const metadata: Metadata = { title: "Entrar al panel", robots: { index: false } };
@@ -12,6 +13,7 @@ const MENSAJES: Record<string, string> = {
 };
 
 export default async function EntrarPage({ searchParams }: PageProps<"/admin/entrar">) {
+  const tienda = await getTienda();
   const { error, volver } = await searchParams;
   const destino = typeof volver === "string" && volver.startsWith("/admin") ? volver : "/admin/productos";
 
@@ -23,7 +25,7 @@ export default async function EntrarPage({ searchParams }: PageProps<"/admin/ent
     <main className="flex flex-1 items-center justify-center bg-cream px-4 py-12">
       <div className="w-full max-w-[400px] rounded-3xl bg-white p-6 text-center shadow-lg">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-v2-160.png" alt="" width={96} height={96} className="mx-auto h-24 w-24 rounded-3xl" />
+        <img src={tienda.logo} alt="" width={96} height={96} className="mx-auto h-24 w-24 rounded-3xl" />
         <h1 className="mt-4 font-display text-3xl font-bold">Panel de la tienda</h1>
         <p className="mt-2 text-lg text-ink-soft">Entra con tu cuenta de Google para administrar el catálogo.</p>
 
