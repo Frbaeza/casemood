@@ -114,5 +114,5 @@ Diseño, desarrollo, despliegue y migración de datos del proyecto completo, tra
 
 ---
 
-Proyecto desarrollado para un cliente real y publicado como portafolio. El código se comparte como referencia; la
-marca, el logo y las fotos de productos pertenecen a Casemood. Todos los derechos reservados.
+Proyecto desarrollado para un cliente real y publicado como portafolio con su autorización. El código se comparte
+como referencia; la marca, el logo y las fotos de productos pertenecen a Casemood. Todos los derechos reservados.
