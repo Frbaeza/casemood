@@ -45,6 +45,12 @@ que la dueña administre todo desde el celular, sin depender de nadie.
 - Modelos, versiones, categorías (con foto de portada) y tarifas de envío por zona, todo editable.
 - **Configuración de la tienda** sin tocar código: logo, color principal (6 paletas accesibles, el naranjo de la marca
   por defecto), nombre, WhatsApp, Instagram, un aviso destacado y qué secciones mostrar.
+
+<p align="center">
+  <img src="docs/capturas/7-admin-tienda.png" width="240" alt="Configuración de la tienda con vista previa en vivo">
+  <img src="docs/capturas/8-admin-colores.png" width="240" alt="Elección del color principal">
+  <img src="docs/capturas/9-admin-aviso-secciones.png" width="240" alt="Aviso destacado y secciones de la tienda">
+</p>
 - Acceso solo con Google y solo para los correos autorizados.
 
 <p align="center">
