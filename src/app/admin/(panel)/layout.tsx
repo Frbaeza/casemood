@@ -45,7 +45,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/admin">) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[480px] flex-1 px-4 pt-4 pb-32">{children}</main>
+      <main className="mx-auto w-full max-w-[480px] flex-1 px-4 pt-4 pb-44">{children}</main>
 
       <Toaster />
       <BottomNav />

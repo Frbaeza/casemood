@@ -23,3 +23,7 @@ STORE_NAME=Casemood
 
 # Usuario de Instagram sin @ (ej. casemood_.cl).
 INSTAGRAM_USERNAME=casemood_.cl
+
+# Link de acceso por correo para clientes (https://resend.com). Vacío = solo Google.
+AUTH_RESEND_KEY=
+AUTH_EMAIL_FROM=Casemood <acceso@casemood.cl>

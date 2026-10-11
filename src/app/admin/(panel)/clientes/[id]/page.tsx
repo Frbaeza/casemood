@@ -44,10 +44,11 @@ export default async function ClientePage({ params }: PageProps<"/admin/clientes
       </section>
 
       <ClienteForm
-        key={`${cliente.nombre}|${cliente.email}|${cliente.telefono}|${cliente.nota}`}
+        key={`${cliente.nombre}|${cliente.telefono}|${cliente.nota}`}
         id={cliente.id}
+        email={cliente.email}
         ventas={cliente.ventas.length}
-        inicial={{ nombre: cliente.nombre, email: cliente.email ?? "", telefono: cliente.telefono ?? "", nota: cliente.nota }}
+        inicial={{ nombre: cliente.nombre, telefono: cliente.telefono ?? "", nota: cliente.nota }}
       />
 
       <section aria-labelledby="t-compras">

@@ -2,23 +2,31 @@
 
 import { useEffect, useState } from "react";
 
-/** Búsqueda con espera corta (no consulta en cada tecla). */
-export function useBusqueda<T>(texto: string, buscar: (t: string) => Promise<T[]>, minimo = 2) {
-  const [resultados, setResultados] = useState<{ para: string; lista: T[] }>({ para: "", lista: [] });
+/**
+ * Búsqueda con espera corta (no consulta en cada tecla).
+ * Con `minimo` 0 también busca con el texto vacío (ej. listar todos los clientes).
+ */
+export function useBusqueda<T>(texto: string, buscar: (t: string) => Promise<T[]>, minimo = 2, activa = true) {
+  const [resultados, setResultados] = useState<{ para: string | null; lista: T[] }>({ para: null, lista: [] });
+  const t = texto.trim();
+  const aplica = activa && t.length >= minimo;
+
   useEffect(() => {
-    const t = texto.trim();
-    if (t.length < minimo) return;
+    if (!aplica) return;
     let vigente = true;
-    const id = setTimeout(() => {
-      buscar(t)
-        .then((lista) => vigente && setResultados({ para: t, lista }))
-        .catch(() => vigente && setResultados({ para: t, lista: [] }));
-    }, 250);
+    const id = setTimeout(
+      () => {
+        buscar(t)
+          .then((lista) => vigente && setResultados({ para: t, lista }))
+          .catch(() => vigente && setResultados({ para: t, lista: [] }));
+      },
+      t ? 250 : 0,
+    );
     return () => {
       vigente = false;
       clearTimeout(id);
     };
-  }, [texto, buscar, minimo]);
-  const t = texto.trim();
-  return { lista: t.length >= minimo && resultados.para === t ? resultados.lista : [], buscando: t.length >= minimo && resultados.para !== t };
+  }, [t, aplica, buscar]);
+
+  return { lista: aplica && resultados.para === t ? resultados.lista : [], buscando: aplica && resultados.para !== t };
 }

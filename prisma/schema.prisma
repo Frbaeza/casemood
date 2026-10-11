@@ -144,16 +144,19 @@ model Configuracion {
   actualizadoEn    DateTime @updatedAt
 }
 
-/// Cliente de la tienda. Puede existir sin cuenta: las ventas se asocian por correo
-/// y aparecen en "Mis compras" cuando la persona entra con ese mismo correo.
+/// Cliente de la tienda = cuenta creada en la web (Google o link al correo).
+/// Es también el "usuario" de Auth.js (ver src/lib/auth-adapter.ts).
 model Cliente {
-  id        Int      @id @default(autoincrement())
-  nombre    String
-  email     String?  @unique // en minúsculas
-  telefono  String? // solo dígitos, con código de país (ej. 56912345678)
-  nota      String   @default("")
-  ventas    Venta[]
-  creadoEn  DateTime @default(now())
+  id                 Int            @id @default(autoincrement())
+  nombre             String
+  email              String?        @unique // en minúsculas
+  emailVerificado    DateTime?
+  telefono           String? // solo dígitos, con código de país (ej. 56912345678)
+  nota               String         @default("") // solo la ve el admin
+  aceptoPrivacidadEn DateTime? // al crear la cuenta
+  ventas             Venta[]
+  accesos            AccesoCliente[]
+  creadoEn           DateTime       @default(now())
 
   @@index([nombre])
   @@index([telefono])
@@ -199,4 +202,26 @@ model VentaItem {
 
   @@index([ventaId])
   @@index([productoId])
+}
+
+/// Forma de entrar de un cliente (ej. su cuenta de Google). No se guardan tokens de acceso.
+model AccesoCliente {
+  id                Int     @id @default(autoincrement())
+  clienteId         Int
+  cliente           Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  tipo              String // "oauth" | "email" ...
+  proveedor         String // "google" | "resend"
+  idEnProveedor     String
+
+  @@unique([proveedor, idEnProveedor])
+  @@index([clienteId])
+}
+
+/// Links de acceso por correo (Auth.js guarda el token ya cifrado).
+model TokenAcceso {
+  identificador String
+  token         String   @unique
+  vence         DateTime
+
+  @@unique([identificador, token])
 }

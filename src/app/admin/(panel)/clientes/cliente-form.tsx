@@ -6,12 +6,12 @@ import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import { toast } from "@/components/admin/toaster";
 import { eliminarCliente, guardarCliente } from "./actions";
 
-type Datos = { nombre: string; email: string; telefono: string; nota: string };
+type Datos = { nombre: string; telefono: string; nota: string };
 
 const campo =
   "mt-1 min-h-12 w-full rounded-xl border-2 border-line bg-white px-3 text-base font-normal focus:border-brand focus:outline-none";
 
-export function ClienteForm({ id, inicial, ventas = 0 }: { id: number | null; inicial: Datos; ventas?: number }) {
+export function ClienteForm({ id, email, inicial, ventas }: { id: number; email: string | null; inicial: Datos; ventas: number }) {
   const router = useRouter();
   const [d, setD] = useState(inicial);
   const [errores, setErrores] = useState<Record<string, string>>({});
@@ -26,13 +26,11 @@ export function ClienteForm({ id, inicial, ventas = 0 }: { id: number | null; in
       setErrores(r.errores ?? {});
       if (!r.ok) return toast((r.errores && Object.values(r.errores)[0]) ?? r.mensaje ?? "No se pudo guardar.", "error");
       toast(r.mensaje ?? "Guardado.");
-      if (!id && r.id) router.push(`/admin/clientes/${r.id}`);
-      else router.refresh();
+      router.refresh();
     });
   }
 
   function eliminar() {
-    if (!id) return;
     start(async () => {
       const r = await eliminarCliente(id);
       if (!r.ok) return toast(r.mensaje ?? "No se pudo eliminar.", "error");
@@ -45,16 +43,14 @@ export function ClienteForm({ id, inicial, ventas = 0 }: { id: number | null; in
 
   return (
     <section className="space-y-3 rounded-3xl bg-white p-4 shadow-sm">
+      <div>
+        <p className="text-base font-semibold">Correo de su cuenta</p>
+        <p className="mt-1 rounded-xl bg-surface px-3 py-3 text-base break-all">{email ?? "—"}</p>
+      </div>
       <label className="block text-base font-semibold">
         Nombre
         <input value={d.nombre} onChange={(e) => set("nombre", e.target.value)} maxLength={80} className={campo} />
         {error("nombre")}
-      </label>
-      <label className="block text-base font-semibold">
-        Correo
-        <input type="email" autoCapitalize="none" value={d.email} onChange={(e) => set("email", e.target.value)} className={campo} />
-        <span className="mt-1 block text-sm font-normal text-ink-soft">Cuando cree su cuenta con este correo, verá sus compras.</span>
-        {error("email")}
       </label>
       <label className="block text-base font-semibold">
         Teléfono
@@ -71,28 +67,25 @@ export function ClienteForm({ id, inicial, ventas = 0 }: { id: number | null; in
         onClick={guardar}
         className="min-h-14 w-full rounded-2xl bg-brand px-4 text-lg font-bold text-white disabled:opacity-50"
       >
-        {pendiente ? "Guardando…" : id ? "Guardar cambios" : "Crear cliente"}
+        {pendiente ? "Guardando…" : "Guardar cambios"}
       </button>
-      {id && (
-        <>
-          <button type="button" onClick={() => setBorrando(true)} className="min-h-12 w-full rounded-xl border-2 border-danger/30 px-3 font-semibold text-danger">
-            Eliminar cliente
-          </button>
-          <ConfirmDialog
-            abierto={borrando}
-            titulo={`¿Eliminar a ${inicial.nombre}?`}
-            confirmar="Sí, eliminar"
-            peligro
-            ocupado={pendiente}
-            onConfirmar={eliminar}
-            onCerrar={() => setBorrando(false)}
-          >
-            {ventas > 0
-              ? `Sus ${ventas} ${ventas === 1 ? "venta se conserva" : "ventas se conservan"} como “Cliente genérico”.`
-              : "Esto no se puede deshacer."}
-          </ConfirmDialog>
-        </>
-      )}
+      <button type="button" onClick={() => setBorrando(true)} className="min-h-12 w-full rounded-xl border-2 border-danger/30 px-3 font-semibold text-danger">
+        Eliminar cliente
+      </button>
+      <ConfirmDialog
+        abierto={borrando}
+        titulo={`¿Eliminar a ${inicial.nombre}?`}
+        confirmar="Sí, eliminar"
+        peligro
+        ocupado={pendiente}
+        onConfirmar={eliminar}
+        onCerrar={() => setBorrando(false)}
+      >
+        Se borra su cuenta de la tienda (podría volver a crearla).{" "}
+        {ventas > 0
+          ? `Sus ${ventas} ${ventas === 1 ? "venta se conserva" : "ventas se conservan"} como “Cliente genérico”.`
+          : ""}
+      </ConfirmDialog>
     </section>
   );
 }

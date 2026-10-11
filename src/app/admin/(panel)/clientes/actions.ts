@@ -3,42 +3,40 @@
 import { z } from "zod";
 import { assertAdmin } from "@/lib/admin-auth";
 import { type ActionResult, errorDeValidacion, errorInesperado } from "@/lib/admin-utils";
-import { clienteSchema, type DatosCliente } from "@/lib/clientes";
 import { getDb } from "@/lib/db";
 
 const idSchema = z.number().int().positive();
-const fichaSchema = clienteSchema.extend({ nota: z.string().trim().max(500) });
 
-/** Crea (sin id) o actualiza un cliente. */
-export async function guardarCliente(id: number | null, datos: DatosCliente & { nota: string }): Promise<ActionResult> {
+// El correo no se edita: es el de la cuenta con que el cliente entra a la tienda.
+const fichaSchema = z.object({
+  nombre: z.string().trim().min(2, "Escribe el nombre del cliente.").max(80),
+  telefono: z
+    .string()
+    .transform((v) => v.replace(/\D/g, "") || null)
+    .pipe(z.string().regex(/^\d{8,15}$/, "Escribe el teléfono con código de país, ej. 56912345678.").nullable()),
+  nota: z.string().trim().max(500),
+});
+export type DatosFicha = z.input<typeof fichaSchema>;
+
+export async function guardarCliente(id: number, datos: DatosFicha): Promise<ActionResult> {
   try {
     await assertAdmin();
     const d = fichaSchema.safeParse(datos);
     if (!d.success) return errorDeValidacion(d.error);
     const db = await getDb();
-    if (d.data.email) {
-      const otro = await db.cliente.findUnique({ where: { email: d.data.email }, select: { id: true, nombre: true } });
-      if (otro && otro.id !== id) {
-        return { ok: false, mensaje: `Ese correo ya es de ${otro.nombre}.`, errores: { email: `Ese correo ya es de ${otro.nombre}.` } };
-      }
-    }
-    if (id) {
-      await db.cliente.update({ where: { id: idSchema.parse(id) }, data: d.data });
-      return { ok: true, id, mensaje: "Cliente guardado." };
-    }
-    const creado = await db.cliente.create({ data: d.data, select: { id: true } });
-    return { ok: true, id: creado.id, mensaje: "Cliente creado." };
+    await db.cliente.update({ where: { id: idSchema.parse(id) }, data: d.data });
+    return { ok: true, id, mensaje: "Cliente guardado." };
   } catch (e) {
     return errorInesperado(e);
   }
 }
 
-/** Elimina el cliente; sus ventas se conservan como "Cliente genérico". */
+/** Elimina la cuenta del cliente; sus ventas se conservan como "Cliente genérico". */
 export async function eliminarCliente(id: number): Promise<ActionResult> {
   try {
     await assertAdmin();
     const db = await getDb();
-    await db.cliente.delete({ where: { id: idSchema.parse(id) } });
+    await db.cliente.delete({ where: { id: idSchema.parse(id) } }); // sus formas de entrar se borran en cascada
     return { ok: true, mensaje: "Cliente eliminado. Sus ventas quedaron como cliente genérico." };
   } catch (e) {
     return errorInesperado(e);

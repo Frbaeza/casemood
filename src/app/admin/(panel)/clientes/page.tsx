@@ -78,7 +78,7 @@ export default async function ClientesAdminPage({ searchParams }: PageProps<"/ad
       {clientes.length === 0 ? (
         <div className="mt-6 rounded-2xl border-2 border-dashed border-line bg-white p-8 text-center">
           <p className="text-lg font-semibold">{texto ? "No hay clientes con esa búsqueda." : "Aún no hay clientes."}</p>
-          {!texto && <p className="mt-1 text-base text-ink-soft">Se crean al registrar una venta o con “+ Nuevo cliente”.</p>}
+          {!texto && <p className="mt-1 text-base text-ink-soft">Aparecen aquí cuando alguien crea su cuenta en la tienda (“Mi cuenta”).</p>}
         </div>
       ) : (
         <ul className="mt-4 divide-y divide-line overflow-hidden rounded-3xl bg-white shadow-sm">
@@ -106,13 +106,6 @@ export default async function ClientesAdminPage({ searchParams }: PageProps<"/ad
 
       <Paginacion pagina={pagina} paginas={paginas} href={href} />
 
-      <Link
-        href="/admin/clientes/nuevo"
-        className="fixed right-[max(1rem,calc(50vw-224px))] bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 flex min-h-14 items-center gap-2 rounded-full bg-brand px-6 text-lg font-bold text-white shadow-xl active:bg-brand-dark"
-      >
-        <span aria-hidden className="text-2xl leading-none">+</span>
-        Nuevo cliente
-      </Link>
     </div>
   );
 }
