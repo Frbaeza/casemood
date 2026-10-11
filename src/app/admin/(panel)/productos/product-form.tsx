@@ -30,8 +30,6 @@ export type ProductoInicial = {
   descripcion: string;
   activo: boolean;
   destacado: boolean;
-  /** null = no se lleva stock. */
-  stock: number | null;
   imagenes: string[];
   variantes: { varianteId: number; disponible: boolean }[];
 };
@@ -60,8 +58,6 @@ export function ProductForm({
   const [descripcion, setDescripcion] = useState(inicial.descripcion);
   const [activo, setActivo] = useState(inicial.activo);
   const [destacado, setDestacado] = useState(inicial.destacado);
-  const [llevaStock, setLlevaStock] = useState(inicial.stock !== null);
-  const [stock, setStock] = useState(inicial.stock !== null ? String(inicial.stock) : "");
 
   // ---- Fotos ----
   const [fotos, setFotos] = useState<Foto[]>(() =>
@@ -411,41 +407,6 @@ export function ProductForm({
               label="Destacado"
               descripcion="Aparece en el inicio, en “Destacados”."
             />
-          </div>
-          <div className="py-2">
-            <Toggle
-              name="llevaStock"
-              checked={llevaStock}
-              onChange={(v) => { setLlevaStock(v); editado("stock"); }}
-              label="Llevar stock"
-              descripcion={
-                llevaStock
-                  ? "Cada venta descuenta unidades. En 0 queda agotado y no se ve en la tienda."
-                  : "Sin control de cantidad: se vende siempre."
-              }
-            />
-            {llevaStock && (
-              <div className="pb-2">
-                <label htmlFor="stock" className="mt-2 mb-1 block text-base font-semibold">
-                  Unidades disponibles
-                </label>
-                <input
-                  id="stock"
-                  name="stock"
-                  value={stock}
-                  onChange={(e) => { setStock(e.target.value.replace(/\D/g, "")); editado("stock"); }}
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  placeholder="Ej: 5"
-                  className={campo}
-                  aria-invalid={!!err("stock")}
-                />
-                <p className="mt-1 text-sm text-ink-soft">
-                  Si sirve para varios iPhone, es una sola cantidad para todos.
-                </p>
-                {err("stock") && <p className="mt-1 text-sm font-semibold text-danger">{err("stock")}</p>}
-              </div>
-            )}
           </div>
         </div>
       </section>

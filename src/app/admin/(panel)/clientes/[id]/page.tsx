@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BackLink } from "@/components/back-link";
 import { getDb } from "@/lib/db";
 import { formatCLP } from "@/lib/format";
+import { aTexto, edad, fechaLarga } from "@/lib/fecha-nacimiento";
 import { fechaCorta } from "@/lib/ventas";
 import { ClienteForm } from "../cliente-form";
 
@@ -23,6 +24,9 @@ export default async function ClientePage({ params }: PageProps<"/admin/clientes
 
   const validas = cliente.ventas.filter((v) => !v.anulada);
   const gastado = validas.reduce((s, v) => s + v.total, 0);
+  const nacimiento = cliente.fechaNacimiento
+    ? `${fechaLarga(cliente.fechaNacimiento)} (${edad(aTexto(cliente.fechaNacimiento))} años)${cliente.autorizaTutor ? " · con autorización de tutor" : ""}`
+    : null;
   const resumen = [
     { titulo: "Total comprado", valor: formatCLP(gastado) },
     { titulo: "Compras", valor: String(validas.length) },
@@ -47,6 +51,7 @@ export default async function ClientePage({ params }: PageProps<"/admin/clientes
         key={`${cliente.nombre}|${cliente.telefono}|${cliente.nota}`}
         id={cliente.id}
         email={cliente.email}
+        nacimiento={nacimiento}
         ventas={cliente.ventas.length}
         inicial={{ nombre: cliente.nombre, telefono: cliente.telefono ?? "", nota: cliente.nota }}
       />

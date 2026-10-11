@@ -110,7 +110,10 @@ y su caja en puntos, y regenera `src/lib/carcasas-disponibles.ts`. Para agregar 
 | `/buscar?q=` | Búsqueda por nombre (todas las palabras), con filtro de categoría y orden. |
 | `/personaliza` | Diseñador de carcasas personalizadas con vista previa. |
 | `/cuenta/entrar` | Crear cuenta o entrar (Google o link al correo), aceptando la política de privacidad. |
-| `/cuenta` | “Mis compras”: las ventas registradas a nombre del cliente. |
+| `/cuenta` | Historial de compras (una línea por compra). |
+| `/cuenta/compras/[id]` | Detalle de una compra con fotos (solo las propias). |
+| `/cuenta/completar` | Primera vez: nombre y fecha de nacimiento obligatoria (menores de 14 con autorización). |
+| `/cuenta/datos` | Mis datos: nombre, fecha de nacimiento y teléfono. |
 | `/privacidad` | Política de privacidad. |
 | `/img/[...key]` | Imagen desde R2 con `Cache-Control: public, max-age=31536000, immutable`. |
 
@@ -120,8 +123,9 @@ y su caja en puntos, y regenera `src/lib/carcasas-disponibles.ts`. Para agregar 
 |---|---|
 | `/admin/entrar` | Inicio de sesión con Google. Solo entran correos de `ADMIN_EMAILS`. |
 | `/admin/ventas` | Resumen (hoy, 7 días, mes, ticket promedio, lo más vendido) e historial. |
-| `/admin/ventas/nueva` | Registrar una venta: cliente con cuenta (búsqueda por exactitud) o “Cliente genérico”; productos por categoría → iPhone → foto; cantidad, precio, descuento, medio de pago y canal. Descuenta stock. |
-| `/admin/ventas/[id]` | Detalle: reasignar cliente y anular (devuelve el stock). |
+| `/admin/ventas/nueva` | Registrar una venta: cliente con cuenta (búsqueda por exactitud) o “Cliente genérico”; productos por categoría → iPhone → foto; cantidad, precio, descuento, medio de pago y canal. El iPhone es obligatorio en productos que dependen del modelo. |
+| `/admin/ventas/[id]` | Detalle: reasignar cliente y anular (no se borra; deja de contar). |
+| `/admin/analisis` | Análisis por período (7 días a 12 meses): indicadores vs período anterior, ventas en el tiempo, rankings, iPhone más vendido por categoría, clientes, edades y cumpleaños. |
 | `/admin/clientes` | Clientes con cuenta: total comprado e historial. |
 | `/admin/productos` | Cuadrícula con buscador, filtro por categoría y por modelo de iPhone, y paginación. |
 | `/admin/productos/nuevo`, `/admin/productos/[id]` | Fotos (cámara o galería, WebP ≤1200 px), datos, compatibilidad por modelo con disponibilidad. |

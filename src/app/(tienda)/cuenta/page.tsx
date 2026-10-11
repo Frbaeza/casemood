@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { IconChevronRight } from "@/components/icons";
 import { getClienteSesion } from "@/lib/cuenta";
 import { getDb } from "@/lib/db";
 import { formatCLP } from "@/lib/format";
 import { fechaCorta } from "@/lib/ventas";
 import { salirDeLaCuenta } from "./acciones";
 
-export const metadata: Metadata = { title: "Mi cuenta", robots: { index: false } };
+export const metadata: Metadata = { title: "Historial de compras", robots: { index: false } };
 
 export default async function CuentaPage() {
   const [cliente, session] = await Promise.all([getClienteSesion(), auth()]);
   if (!session?.user?.email) redirect("/cuenta/entrar");
+  // Primera vez: debe completar su perfil (fecha de nacimiento) antes de ver su cuenta.
+  if (cliente && !cliente.fechaNacimiento) redirect("/cuenta/completar");
 
   const db = await getDb();
   const compras = cliente
@@ -23,7 +27,14 @@ export default async function CuentaPage() {
           fecha: true,
           total: true,
           descuento: true,
-          items: { orderBy: { id: "asc" }, select: { id: true, nombre: true, modelo: true, cantidad: true, subtotal: true } },
+          items: {
+            orderBy: { id: "asc" },
+            select: {
+              id: true,
+              nombre: true,
+              cantidad: true,
+            },
+          },
         },
       })
     : [];
@@ -34,7 +45,7 @@ export default async function CuentaPage() {
     <div className="space-y-5 pt-5 pb-8">
       <header>
         <p className="text-lg text-ink-soft">Hola{nombre ? `, ${nombre.split(" ")[0]}` : ""} 👋</p>
-        <h1 className="font-display text-4xl leading-tight font-bold">Mis compras</h1>
+        <h1 className="font-display text-4xl leading-tight font-bold">Historial de compras</h1>
         <p className="mt-1 text-base break-all text-ink-soft">{session.user.email}</p>
       </header>
 
@@ -59,28 +70,24 @@ export default async function CuentaPage() {
           </p>
         </div>
       ) : (
-        <ul className="space-y-3">
-          {compras.map((v) => (
-            <li key={v.id} className="rounded-3xl border-2 border-line bg-white p-4">
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="text-base font-semibold">{fechaCorta(v.fecha)}</p>
-                <p className="font-display text-xl font-bold">{formatCLP(v.total)}</p>
-              </div>
-              <ul className="mt-2 space-y-1 text-base">
-                {v.items.map((i) => (
-                  <li key={i.id} className="flex justify-between gap-3">
-                    <span className="min-w-0">
-                      {i.cantidad > 1 && `${i.cantidad}× `}
-                      {i.nombre}
-                      {i.modelo && <span className="text-ink-soft"> · {i.modelo}</span>}
+        <ul className="divide-y divide-line overflow-hidden rounded-3xl border-2 border-line bg-white">
+          {compras.map((v) => {
+            const unidades = v.items.reduce((n, i) => n + i.cantidad, 0);
+            return (
+              <li key={v.id}>
+                <Link href={`/cuenta/compras/${v.id}`} className="flex min-h-16 items-center gap-3 px-4 py-3 active:bg-surface">
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base font-semibold">{fechaCorta(v.fecha)}</span>
+                    <span className="block truncate text-sm text-ink-soft">
+                      {v.items.length === 1 ? v.items[0].nombre : `${unidades} productos`}
                     </span>
-                    <span className="shrink-0 text-ink-soft">{formatCLP(i.subtotal)}</span>
-                  </li>
-                ))}
-              </ul>
-              {v.descuento > 0 && <p className="mt-1 text-sm text-ink-soft">Incluye {formatCLP(v.descuento)} de descuento.</p>}
-            </li>
-          ))}
+                  </span>
+                  <span className="shrink-0 font-display text-lg font-bold">{formatCLP(v.total)}</span>
+                  <IconChevronRight className="h-5 w-5 shrink-0 text-ink-soft" />
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
 

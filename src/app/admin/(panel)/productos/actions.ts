@@ -34,14 +34,6 @@ const productoSchema = z.object({
   descripcion: z.string().trim().max(3000, "La descripción es muy larga.").default(""),
   activo: z.boolean(),
   destacado: z.boolean(),
-  // "" o ausente = no se lleva stock.
-  stock: z
-    .string()
-    .nullable()
-    .transform((s) => (s === null ? null : s.replace(/\D/g, "")))
-    .refine((s) => s !== "", "Escribe cuántas unidades hay (o desactiva “Llevar stock”).")
-    .transform((s) => (s === null ? null : Number(s)))
-    .pipe(z.number().int().min(0).max(100_000, "Revisa la cantidad.").nullable()),
   imagenes: json(z.array(z.string().regex(KEY_IMAGEN)).max(MAX_IMAGENES, `Máximo ${MAX_IMAGENES} fotos.`)),
   variantes: json(
     z.array(z.object({ varianteId: z.number().int().positive(), disponible: z.boolean() })).max(500),
@@ -60,7 +52,6 @@ export async function guardarProducto(_prev: ActionResult | null, formData: Form
       descripcion: formData.get("descripcion") ?? "",
       activo: formData.get("activo") === "on",
       destacado: formData.get("destacado") === "on",
-      stock: formData.get("llevaStock") === "on" ? String(formData.get("stock") ?? "") : null,
       imagenes: formData.get("imagenes") ?? "[]",
       variantes: formData.get("variantes") ?? "[]",
     });
@@ -98,8 +89,6 @@ export async function guardarProducto(_prev: ActionResult | null, formData: Form
       descripcion: d.descripcion,
       activo: d.activo,
       destacado: d.destacado,
-      stock: d.stock,
-      agotado: d.stock !== null && d.stock <= 0,
     };
 
     let id = d.id;

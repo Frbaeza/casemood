@@ -69,7 +69,6 @@ export type ProductoOpcion = {
   id: number;
   nombre: string;
   precio: number;
-  stock: number | null;
   activo: boolean;
   categoria: string;
   imagen: string | null;
@@ -101,7 +100,6 @@ export async function buscarProductosVenta(f: FiltroProductos): Promise<{ produc
     id: true,
     nombre: true,
     precio: true,
-    stock: true,
     activo: true,
     categoria: { select: { nombre: true } },
     imagenes: { orderBy: { orden: "asc" }, take: 1, select: { key: true } },
@@ -149,7 +147,6 @@ export async function buscarProductosVenta(f: FiltroProductos): Promise<{ produc
       id: p.id,
       nombre: p.nombre,
       precio: p.precio,
-      stock: p.stock,
       activo: p.activo,
       categoria: p.categoria.nombre,
       imagen: p.imagenes[0]?.key ?? null,
@@ -206,28 +203,22 @@ export async function registrarVenta(datos: DatosVenta): Promise<ActionResult> {
       const ids = [...new Set(d.items.map((i) => i.productoId))];
       const productos = await tx.producto.findMany({
         where: { id: { in: ids } },
-        select: { id: true, nombre: true, stock: true, categoria: { select: { nombre: true } } },
+        select: {
+          id: true,
+          nombre: true,
+          categoria: { select: { nombre: true } },
+          variantes: { select: { variante: { select: { nombre: true } } } },
+        },
       });
       const porId = new Map(productos.map((p) => [p.id, p]));
-
-      // Stock: se valida y descuenta por producto (una carcasa para varios iPhone es la misma unidad).
-      const porProducto = new Map<number, number>();
-      for (const i of d.items) porProducto.set(i.productoId, (porProducto.get(i.productoId) ?? 0) + i.cantidad);
-      for (const [productoId, cantidad] of porProducto) {
-        const p = porId.get(productoId);
-        if (!p) throw new Aviso("Uno de los productos ya no existe. Quítalo de la venta.");
-        if (p.stock === null) continue;
-        // Descuento atómico: solo si alcanza (evita vender de más con dos ventas al mismo tiempo).
-        const r = await tx.producto.updateMany({
-          where: { id: productoId, stock: { gte: cantidad } },
-          data: { stock: { decrement: cantidad } },
-        });
-        if (r.count === 0) {
-          throw new Aviso(
-            `De “${p.nombre}” quedan ${p.stock} ${p.stock === 1 ? "unidad" : "unidades"}. Corrige la cantidad o el stock del producto.`,
-          );
+      if (ids.some((id) => !porId.has(id))) throw new Aviso("Uno de los productos ya no existe. Quítalo de la venta.");
+      // El iPhone es obligatorio (y debe ser compatible) si el producto sirve para varios modelos.
+      for (const i of d.items) {
+        const p = porId.get(i.productoId)!;
+        const modelos = p.variantes.map((v) => v.variante.nombre);
+        if (modelos.length > 1 && (!i.modelo || !modelos.includes(i.modelo))) {
+          throw new Aviso(`Elige para qué iPhone es “${p.nombre}”.`);
         }
-        await tx.producto.updateMany({ where: { id: productoId, stock: { lte: 0 } }, data: { agotado: true } });
       }
 
       return tx.venta.create({
@@ -249,7 +240,7 @@ export async function registrarVenta(datos: DatosVenta): Promise<ActionResult> {
                 productoId: i.productoId,
                 nombre: p.nombre,
                 categoria: p.categoria.nombre,
-                modelo: i.modelo || null,
+                modelo: i.modelo || (p.variantes.length === 1 ? p.variantes[0].variante.nombre : null),
                 cantidad: i.cantidad,
                 precioUnitario: i.precioUnitario,
                 subtotal: i.cantidad * i.precioUnitario,
@@ -268,30 +259,16 @@ export async function registrarVenta(datos: DatosVenta): Promise<ActionResult> {
   }
 }
 
-/** Anula la venta (no se borra) y devuelve las unidades al stock. */
+/** Anula la venta: no se borra, queda en el historial y deja de contar en los totales. */
 export async function anularVenta(id: number): Promise<ActionResult> {
   try {
     await assertAdmin();
     const db = await getDb();
-    await db.$transaction(async (tx) => {
-      const venta = await tx.venta.findUnique({
-        where: { id: idSchema.parse(id) },
-        select: { anulada: true, items: { select: { productoId: true, cantidad: true } } },
-      });
-      if (!venta) throw new Aviso("Esta venta ya no existe.");
-      if (venta.anulada) throw new Aviso("Esta venta ya estaba anulada.");
-      await tx.venta.update({ where: { id }, data: { anulada: true, anuladaEn: new Date() } });
-      for (const item of venta.items) {
-        if (!item.productoId) continue;
-        // Solo productos que llevan stock (stock no nulo).
-        await tx.producto.updateMany({
-          where: { id: item.productoId, stock: { not: null } },
-          data: { stock: { increment: item.cantidad } },
-        });
-        await tx.producto.updateMany({ where: { id: item.productoId, stock: { gt: 0 } }, data: { agotado: false } });
-      }
-    });
-    return { ok: true, mensaje: "Venta anulada. Las unidades volvieron al stock." };
+    const venta = await db.venta.findUnique({ where: { id: idSchema.parse(id) }, select: { anulada: true } });
+    if (!venta) throw new Aviso("Esta venta ya no existe.");
+    if (venta.anulada) throw new Aviso("Esta venta ya estaba anulada.");
+    await db.venta.update({ where: { id }, data: { anulada: true, anuladaEn: new Date() } });
+    return { ok: true, mensaje: "Venta anulada." };
   } catch (e) {
     if (e instanceof Aviso) return { ok: false, mensaje: e.message };
     return errorInesperado(e);

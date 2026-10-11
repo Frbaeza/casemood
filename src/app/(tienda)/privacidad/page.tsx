@@ -31,7 +31,8 @@ export default async function PrivacidadPage() {
       <h2 className={h2}>Qué datos guardamos</h2>
       <ul className="list-disc space-y-1 pl-6">
         <li>Tu nombre y correo electrónico, al crear tu cuenta (con Google o con un link a tu correo).</li>
-        <li>Tu teléfono, solo si nos lo das al comprar.</li>
+        <li>Tu fecha de nacimiento, que pedimos al crear la cuenta.</li>
+        <li>Tu teléfono, solo si nos lo das.</li>
         <li>Tus compras: fecha, productos, montos y medio de pago.</li>
       </ul>
       <p>No guardamos contraseñas ni datos de tarjetas. No pedimos datos sensibles.</p>
@@ -40,9 +41,14 @@ export default async function PrivacidadPage() {
       <ul className="list-disc space-y-1 pl-6">
         <li>Mostrarte tu historial de compras en “Mi cuenta”.</li>
         <li>Registrar y gestionar las ventas de la tienda, y atenderte si tienes un problema con un pedido.</li>
-        <li>Estadísticas internas de ventas para mejorar la tienda.</li>
+        <li>Saludarte en tu cumpleaños y, a veces, ofrecerte un descuento.</li>
+        <li>Estadísticas internas de ventas (por ejemplo, por rango de edad) para mejorar la tienda.</li>
       </ul>
       <p>No vendemos ni compartimos tus datos con terceros para publicidad.</p>
+      <p>
+        Si tienes menos de 14 años, necesitas la autorización de tu madre, padre o tutor para crear tu cuenta; te lo
+        preguntamos al registrarte.
+      </p>
 
       <h2 className={h2}>Servicios que usamos</h2>
       <p>

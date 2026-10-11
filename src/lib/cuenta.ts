@@ -10,6 +10,6 @@ export const getClienteSesion = cache(async () => {
   const db = await getDb();
   return db.cliente.findUnique({
     where: { email },
-    select: { id: true, nombre: true, email: true, creadoEn: true },
+    select: { id: true, nombre: true, email: true, telefono: true, fechaNacimiento: true, creadoEn: true },
   });
 });

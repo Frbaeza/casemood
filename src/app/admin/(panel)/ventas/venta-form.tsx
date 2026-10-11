@@ -53,6 +53,9 @@ export function VentaForm({ hoy, categorias, modelos }: { hoy: string; categoria
 
   function registrar() {
     if (items.length === 0) return toast("Agrega al menos un producto.", "error");
+    // Para saber qué modelo se vende más: el iPhone es obligatorio si el producto depende del modelo.
+    const sinModelo = items.find((i) => i.producto.modelos.length > 1 && !i.modelo);
+    if (sinModelo) return toast(`Elige para qué iPhone es “${sinModelo.producto.nombre}”.`, "error");
     if (!medioPago) return toast("Elige el medio de pago.", "error");
     if (!canal) return toast("Elige por dónde fue la venta.", "error");
     startGuardar(async () => {
@@ -117,7 +120,6 @@ export function VentaForm({ hoy, categorias, modelos }: { hoy: string; categoria
         {items.length > 0 && (
           <ul className="space-y-3">
             {items.map((i) => {
-              const sinStock = i.producto.stock !== null && i.cantidad > i.producto.stock;
               return (
                 <li key={i.uid} className="space-y-2 rounded-2xl border-2 border-line p-3">
                   <div className="flex gap-3">
@@ -132,7 +134,6 @@ export function VentaForm({ hoy, categorias, modelos }: { hoy: string; categoria
                       <p className="text-sm text-ink-soft">
                         {i.producto.categoria}
                         {i.modelo && i.producto.modelos.length <= 1 && ` · ${i.modelo}`}
-                        {i.producto.stock !== null && ` · Stock: ${i.producto.stock}`}
                       </p>
                     </div>
                     <button
@@ -145,7 +146,7 @@ export function VentaForm({ hoy, categorias, modelos }: { hoy: string; categoria
                   </div>
                   {i.producto.modelos.length > 1 && (
                     <select aria-label="Para qué iPhone" value={i.modelo} onChange={(e) => cambiar(i.uid, { modelo: e.target.value })} className={campo}>
-                      <option value="">¿Para qué iPhone? (opcional)</option>
+                      <option value="">¿Para qué iPhone? (obligatorio)</option>
                       {i.producto.modelos.map((m) => (
                         <option key={m} value={m}>
                           {m}
@@ -177,8 +178,8 @@ export function VentaForm({ hoy, categorias, modelos }: { hoy: string; categoria
                     </label>
                   </div>
                   <p className="flex justify-between text-base">
-                    <span className={sinStock ? "font-semibold text-danger" : "text-ink-soft"}>
-                      {sinStock ? `Solo quedan ${i.producto.stock}` : "Subtotal"}
+                    <span className="text-ink-soft">
+                      Subtotal
                     </span>
                     <strong>{formatCLP(i.cantidad * (Number(i.precio) || 0))}</strong>
                   </p>

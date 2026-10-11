@@ -50,8 +50,7 @@ export function AnularVenta({ ventaId }: { ventaId: number }) {
         onConfirmar={() => ejecutar(() => anularVenta(ventaId), { alTerminar: () => setAbierto(false) })}
         onCerrar={() => setAbierto(false)}
       >
-        No se borra: queda en el historial marcada como anulada y no cuenta en los totales. Las unidades vuelven al
-        stock.
+        No se borra: queda en el historial marcada como anulada y no cuenta en los totales.
       </ConfirmDialog>
     </>
   );

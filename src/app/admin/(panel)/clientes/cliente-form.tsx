@@ -11,7 +11,20 @@ type Datos = { nombre: string; telefono: string; nota: string };
 const campo =
   "mt-1 min-h-12 w-full rounded-xl border-2 border-line bg-white px-3 text-base font-normal focus:border-brand focus:outline-none";
 
-export function ClienteForm({ id, email, inicial, ventas }: { id: number; email: string | null; inicial: Datos; ventas: number }) {
+export function ClienteForm({
+  id,
+  email,
+  nacimiento,
+  inicial,
+  ventas,
+}: {
+  id: number;
+  email: string | null;
+  /** Fecha de nacimiento y edad ya formateadas (null si aún no completa su perfil). */
+  nacimiento: string | null;
+  inicial: Datos;
+  ventas: number;
+}) {
   const router = useRouter();
   const [d, setD] = useState(inicial);
   const [errores, setErrores] = useState<Record<string, string>>({});
@@ -46,6 +59,10 @@ export function ClienteForm({ id, email, inicial, ventas }: { id: number; email:
       <div>
         <p className="text-base font-semibold">Correo de su cuenta</p>
         <p className="mt-1 rounded-xl bg-surface px-3 py-3 text-base break-all">{email ?? "—"}</p>
+      </div>
+      <div>
+        <p className="text-base font-semibold">Fecha de nacimiento</p>
+        <p className="mt-1 rounded-xl bg-surface px-3 py-3 text-base">{nacimiento ?? "Aún no completa su perfil"}</p>
       </div>
       <label className="block text-base font-semibold">
         Nombre

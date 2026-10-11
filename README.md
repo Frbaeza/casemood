@@ -37,12 +37,12 @@ que la dueña administre todo desde el celular, sin depender de nadie.
 - **Cotizador de envíos** por región y tamaño, con las tarifas reales de Blue Express.
 - Accesible: textos de 16 px o más, botones de al menos 48 px y siempre con texto (sin íconos sueltos).
 
-- **Mi cuenta**: el cliente entra con Google o con un link a su correo (sin contraseña) y ve todo lo que ha comprado.
+- **Mi cuenta**: el cliente entra con Google o con un link a su correo (sin contraseña), completa su perfil y ve su historial de compras con el detalle y las fotos de cada una.
 
 ### Para la tienda (panel `/admin`)
 
 - **Registro de ventas** desde el celular: cliente con cuenta o genérico, productos por categoría → iPhone → foto, medio de pago y canal; resumen de ventas, ticket promedio y lo más vendido. Las ventas se pueden anular o reasignar.
-- **Stock opcional** por producto: cada venta lo descuenta y, al llegar a 0, el producto sale de la tienda.
+- **Análisis**: ventas en el tiempo, comparación con el período anterior, lo más vendido, iPhone más vendido en cada categoría, canales, medios de pago, clientes recurrentes, edades y cumpleaños del mes (con saludo por WhatsApp).
 - Productos con fotos tomadas desde el celular (se comprimen a WebP en el navegador antes de subirlas), precio,
   categoría y compatibilidad por modelo con disponibilidad.
 - Filtros por categoría y por modelo de iPhone, vista en cuadrícula igual a la del catálogo.

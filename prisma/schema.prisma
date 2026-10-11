@@ -67,8 +67,8 @@ model Producto {
   categoria     Categoria          @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
   imagenes      ImagenProducto[]
   variantes     ProductoVariante[] // vacío = "Universal"
-  stock         Int? // null = no se lleva stock
-  agotado       Boolean            @default(false) // stock <= 0; se actualiza al cambiar el stock
+  stock         Int? // sin uso: la tienda decidió marcar "Inactivo" en vez de llevar stock
+  agotado       Boolean            @default(false) // sin uso (ver stock)
   itemsVenta    VentaItem[]
   creadoEn      DateTime           @default(now())
   actualizadoEn DateTime           @updatedAt
@@ -154,6 +154,8 @@ model Cliente {
   telefono           String? // solo dígitos, con código de país (ej. 56912345678)
   nota               String         @default("") // solo la ve el admin
   aceptoPrivacidadEn DateTime? // al crear la cuenta
+  fechaNacimiento    DateTime?      @db.Date // obligatoria al completar el perfil
+  autorizaTutor      Boolean        @default(false) // menor de 14: declara autorización de madre, padre o tutor
   ventas             Venta[]
   accesos            AccesoCliente[]
   creadoEn           DateTime       @default(now())

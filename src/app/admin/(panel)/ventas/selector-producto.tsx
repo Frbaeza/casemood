@@ -137,14 +137,12 @@ export function SelectorProducto({
           {productos.length > 0 && (
             <ul className="grid grid-cols-2 gap-2">
               {productos.map((p) => {
-                const agotado = p.stock !== null && p.stock <= 0;
                 return (
                   <li key={p.id} className="flex">
                     <button
                       type="button"
-                      disabled={agotado}
                       onClick={() => onElegir(p, version && version !== "todos" ? version.nombre : null)}
-                      className="flex w-full flex-col overflow-hidden rounded-2xl border-2 border-line bg-white text-left active:border-brand disabled:opacity-50"
+                      className="flex w-full flex-col overflow-hidden rounded-2xl border-2 border-line bg-white text-left active:border-brand"
                     >
                       <span className="relative block aspect-3/4 w-full bg-surface">
                         {p.imagen ? (
@@ -153,16 +151,15 @@ export function SelectorProducto({
                         ) : (
                           <span className="flex h-full items-center justify-center text-sm text-ink-soft">Sin foto</span>
                         )}
-                        {(agotado || !p.activo) && (
+                        {!p.activo && (
                           <span className="absolute top-1.5 left-1.5 rounded-md bg-ink px-1.5 py-0.5 text-xs font-bold text-white uppercase">
-                            {agotado ? "Agotado" : "Oculto"}
+                            Inactivo
                           </span>
                         )}
                       </span>
                       <span className="flex flex-1 flex-col gap-0.5 p-2">
                         <span className="line-clamp-2 text-sm leading-snug font-semibold">{p.nombre}</span>
                         <span className="mt-auto text-base font-bold">{formatCLP(p.precio)}</span>
-                        {p.stock !== null && !agotado && <span className="text-xs text-ink-soft">Stock: {p.stock}</span>}
                       </span>
                     </button>
                   </li>

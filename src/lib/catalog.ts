@@ -5,8 +5,8 @@ import { CARCASAS_DISPONIBLES } from "@/lib/carcasas-disponibles";
 import type { Orden } from "@/lib/catalog-orden";
 import type { RegionCotizable } from "@/lib/envios";
 
-/** Productos que se muestran en el catálogo: activos y no agotados (stock en 0). */
-const EN_TIENDA = { activo: true, agotado: false } satisfies Prisma.ProductoWhereInput;
+/** Productos que se muestran en el catálogo (los inactivos están ocultos o sin stock). */
+const EN_TIENDA = { activo: true } satisfies Prisma.ProductoWhereInput;
 
 /** Datos mínimos para mostrar una tarjeta de producto. */
 const tarjetaSelect = {
@@ -34,7 +34,7 @@ function orderByDe(orden: Orden): Prisma.ProductoOrderByWithRelationInput[] {
 }
 
 /**
- * Productos que cuentan como "disponibles" para una versión: activos, no agotados y,
+ * Productos que cuentan como "disponibles" para una versión: activos, marcados disponibles para esa versión y,
  * si hay categoría, de esa categoría (ej. solo carcasas).
  */
 function productosDisponibles(categoriaSlug?: string): Prisma.ProductoVarianteWhereInput {

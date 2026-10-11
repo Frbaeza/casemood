@@ -2,14 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-/** Secciones que viven dentro de "Más" (para marcarlo como activo). */
-export const SECCIONES_MAS = [
-  { href: "/admin/modelos", label: "Modelos", descripcion: "Modelos y versiones de iPhone." },
-  { href: "/admin/categorias", label: "Categorías", descripcion: "Categorías y sus fotos de portada." },
-  { href: "/admin/envios", label: "Envíos", descripcion: "Tarifas de Blue Express por zona." },
-  { href: "/admin/tienda", label: "Tienda", descripcion: "Logo, color, contacto, aviso y secciones." },
-];
+import { SECCIONES_MAS } from "@/lib/admin-secciones";
 
 const SECCIONES = [
   {
@@ -41,6 +34,12 @@ const SECCIONES = [
     ),
   },
   {
+    href: "/admin/analisis",
+    label: "Análisis",
+    activaEn: ["/admin/analisis"],
+    icono: <path d="M5 20V10M12 20V4M19 20v-7" />,
+  },
+  {
     href: "/admin/mas",
     label: "Más",
     activaEn: ["/admin/mas", ...SECCIONES_MAS.map((s) => s.href)],
@@ -61,7 +60,7 @@ export function BottomNav() {
       aria-label="Secciones del panel"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white pb-[env(safe-area-inset-bottom)]"
     >
-      <ul className="mx-auto grid max-w-[480px] grid-cols-4">
+      <ul className="mx-auto grid max-w-[480px] grid-cols-5">
         {SECCIONES.map((s) => {
           const activa = s.activaEn.some((r) => pathname.startsWith(r));
           return (
@@ -73,7 +72,7 @@ export function BottomNav() {
                   activa ? "text-brand" : "text-ink-soft"
                 }`}
               >
-                <span className={`rounded-full px-4 py-1 ${activa ? "bg-brand-soft" : ""}`}>
+                <span className={`rounded-full px-3 py-1 ${activa ? "bg-brand-soft" : ""}`}>
                   <svg
                     width="24"
                     height="24"

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { SECCIONES_MAS } from "@/components/admin/bottom-nav";
 import { IconChevronRight } from "@/components/icons";
+import { SECCIONES_MAS } from "@/lib/admin-secciones";
 
 export default function MasPage() {
   return (
