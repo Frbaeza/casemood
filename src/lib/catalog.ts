@@ -5,6 +5,9 @@ import { CARCASAS_DISPONIBLES } from "@/lib/carcasas-disponibles";
 import type { Orden } from "@/lib/catalog-orden";
 import type { RegionCotizable } from "@/lib/envios";
 
+/** Productos que se muestran en el catálogo: activos y no agotados (stock en 0). */
+const EN_TIENDA = { activo: true, agotado: false } satisfies Prisma.ProductoWhereInput;
+
 /** Datos mínimos para mostrar una tarjeta de producto. */
 const tarjetaSelect = {
   id: true,
@@ -35,7 +38,7 @@ function orderByDe(orden: Orden): Prisma.ProductoOrderByWithRelationInput[] {
  * si hay categoría, de esa categoría (ej. solo carcasas).
  */
 function productosDisponibles(categoriaSlug?: string): Prisma.ProductoVarianteWhereInput {
-  return { disponible: true, producto: { activo: true, ...(categoriaSlug ? { categoria: { slug: categoriaSlug } } : {}) } };
+  return { disponible: true, producto: { ...EN_TIENDA, ...(categoriaSlug ? { categoria: { slug: categoriaSlug } } : {}) } };
 }
 
 const selectVersion = (categoriaSlug?: string) =>
@@ -111,7 +114,7 @@ export const getVariante = cache(async (modeloSlug: string, varianteSlug: string
 /** Productos activos compatibles y disponibles para la variante, más los universales (sin variantes). */
 function whereParaVariante(varianteId: number): Prisma.ProductoWhereInput {
   return {
-    activo: true,
+    ...EN_TIENDA,
     OR: [{ variantes: { some: { varianteId, disponible: true } } }, { variantes: { none: {} } }],
   };
 }
@@ -125,12 +128,12 @@ export async function getProductosParaVariante(varianteId: number, categoriaSlug
     const orden = orderByDe(ordenElegido);
     const [especificos, universales] = await Promise.all([
       db.producto.findMany({
-        where: { activo: true, variantes: { some: { varianteId, disponible: true } }, ...porCategoria },
+        where: { ...EN_TIENDA, variantes: { some: { varianteId, disponible: true } }, ...porCategoria },
         orderBy: orden,
         select: tarjetaSelect,
       }),
       db.producto.findMany({
-        where: { activo: true, variantes: { none: {} }, ...porCategoria },
+        where: { ...EN_TIENDA, variantes: { none: {} }, ...porCategoria },
         orderBy: orden,
         select: tarjetaSelect,
       }),
@@ -166,7 +169,7 @@ export async function getProductosParaVariante(varianteId: number, categoriaSlug
 export async function getDestacados(limite = 6) {
   const db = await getDb();
   return db.producto.findMany({
-    where: { activo: true, destacado: true },
+    where: { ...EN_TIENDA, destacado: true },
     orderBy: { creadoEn: "desc" },
     take: limite,
     select: tarjetaSelect,
@@ -180,16 +183,16 @@ export async function getDestacados(limite = 6) {
 export const getCategoriasConProductos = cache(async () => {
   const db = await getDb();
   const categorias = await db.categoria.findMany({
-    where: { productos: { some: { activo: true } } },
+    where: { productos: { some: EN_TIENDA } },
     orderBy: [{ orden: "asc" }, { nombre: "asc" }],
     select: {
       id: true,
       nombre: true,
       slug: true,
       imagenKey: true,
-      _count: { select: { productos: { where: { activo: true } } } },
+      _count: { select: { productos: { where: EN_TIENDA } } },
       productos: {
-        where: { activo: true, imagenes: { some: {} } },
+        where: { ...EN_TIENDA, imagenes: { some: {} } },
         orderBy: [{ destacado: "desc" }, { creadoEn: "desc" }],
         take: 1,
         select: { imagenes: { orderBy: { orden: "asc" }, take: 1, select: { key: true } } },
@@ -198,7 +201,7 @@ export const getCategoriasConProductos = cache(async () => {
   });
   const conModelo = await Promise.all(
     categorias.map((c) =>
-      db.producto.count({ where: { activo: true, categoriaId: c.id, variantes: { some: {} } }, take: 1 }),
+      db.producto.count({ where: { ...EN_TIENDA, categoriaId: c.id, variantes: { some: {} } }, take: 1 }),
     ),
   );
   return categorias.map((c, i) => ({
@@ -236,7 +239,7 @@ export const POR_PAGINA = 48;
 /** Productos activos de una categoría (de cualquier modelo), o de todas si no se indica, paginados. */
 export async function getProductosDeCategoria(slug: string | undefined, pagina = 1, orden: Orden = "recomendados") {
   const db = await getDb();
-  const where = slug ? { activo: true, categoria: { slug } } : { activo: true };
+  const where = slug ? { ...EN_TIENDA, categoria: { slug } } : EN_TIENDA;
   const [productos, total] = await Promise.all([
     db.producto.findMany({
       where,
@@ -257,7 +260,7 @@ export async function buscarProductos(texto: string, orden: Orden = "recomendado
   if (palabras.length === 0) return [];
   return db.producto.findMany({
     where: {
-      activo: true,
+      ...EN_TIENDA,
       AND: palabras.map((p) => ({ nombre: { contains: p, mode: "insensitive" as const } })),
     },
     orderBy: orderByDe(orden),

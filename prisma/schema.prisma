@@ -67,10 +67,13 @@ model Producto {
   categoria     Categoria          @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
   imagenes      ImagenProducto[]
   variantes     ProductoVariante[] // vacío = "Universal"
+  stock         Int? // null = no se lleva stock
+  agotado       Boolean            @default(false) // stock <= 0; se actualiza al cambiar el stock
+  itemsVenta    VentaItem[]
   creadoEn      DateTime           @default(now())
   actualizadoEn DateTime           @updatedAt
 
-  @@index([activo, categoriaId])
+  @@index([activo, agotado, categoriaId])
   @@index([activo, destacado])
 }
 
@@ -139,4 +142,61 @@ model Configuracion {
   mostrarDisenador Boolean  @default(true)
   comunaOrigen     String   @default("Maipú")
   actualizadoEn    DateTime @updatedAt
+}
+
+/// Cliente de la tienda. Puede existir sin cuenta: las ventas se asocian por correo
+/// y aparecen en "Mis compras" cuando la persona entra con ese mismo correo.
+model Cliente {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String?  @unique // en minúsculas
+  telefono  String? // solo dígitos, con código de país (ej. 56912345678)
+  nota      String   @default("")
+  ventas    Venta[]
+  creadoEn  DateTime @default(now())
+
+  @@index([nombre])
+  @@index([telefono])
+}
+
+/// Venta registrada desde admin → Ventas.
+model Venta {
+  id         Int         @id @default(autoincrement())
+  fecha      DateTime // día y hora de la venta
+  clienteId  Int?
+  cliente    Cliente?    @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+  items      VentaItem[]
+  subtotal   Int // suma de los ítems, CLP
+  descuento  Int         @default(0)
+  total      Int // subtotal - descuento
+  medioPago  String // transferencia | efectivo | debito | credito | otro
+  canal      String // whatsapp | instagram | presencial | otro
+  boleta     String? // número de boleta o factura del SII
+  nota       String      @default("")
+  anulada    Boolean     @default(false)
+  anuladaEn  DateTime?
+  creadaPor  String // correo del admin que la registró
+  creadoEn   DateTime    @default(now())
+
+  @@index([anulada, fecha])
+  @@index([clienteId, fecha])
+}
+
+/// Producto vendido. Guarda nombre y precio del momento: el historial no cambia
+/// si después se edita o elimina el producto.
+model VentaItem {
+  id             Int       @id @default(autoincrement())
+  ventaId        Int
+  venta          Venta     @relation(fields: [ventaId], references: [id], onDelete: Cascade)
+  productoId     Int?
+  producto       Producto? @relation(fields: [productoId], references: [id], onDelete: SetNull)
+  nombre         String
+  categoria      String // nombre de la categoría al vender (para estadísticas)
+  modelo         String? // iPhone para el que se vendió (ej. "iPhone 15 Pro"), si aplica
+  cantidad       Int
+  precioUnitario Int
+  subtotal       Int
+
+  @@index([ventaId])
+  @@index([productoId])
 }

@@ -21,6 +21,7 @@ export default async function EditarProductoPage({ params }: PageProps<"/admin/p
         descripcion: true,
         activo: true,
         destacado: true,
+        stock: true,
         actualizadoEn: true,
         imagenes: { orderBy: { orden: "asc" }, select: { key: true } },
         variantes: { select: { varianteId: true, disponible: true } },

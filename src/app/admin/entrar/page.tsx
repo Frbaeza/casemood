@@ -15,7 +15,7 @@ const MENSAJES: Record<string, string> = {
 export default async function EntrarPage({ searchParams }: PageProps<"/admin/entrar">) {
   const tienda = await getTienda();
   const { error, volver } = await searchParams;
-  const destino = typeof volver === "string" && volver.startsWith("/admin") ? volver : "/admin/productos";
+  const destino = typeof volver === "string" && volver.startsWith("/admin") ? volver : "/admin/ventas";
 
   if (await getAdminEmail()) redirect(destino);
 

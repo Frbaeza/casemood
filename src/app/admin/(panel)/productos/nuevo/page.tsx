@@ -15,6 +15,7 @@ export default async function NuevoProductoPage() {
         descripcion: "",
         activo: true,
         destacado: false,
+        stock: null,
         imagenes: [],
         variantes: [],
       }}

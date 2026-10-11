@@ -3,54 +3,52 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+/** Secciones que viven dentro de "Más" (para marcarlo como activo). */
+export const SECCIONES_MAS = [
+  { href: "/admin/modelos", label: "Modelos", descripcion: "Modelos y versiones de iPhone." },
+  { href: "/admin/categorias", label: "Categorías", descripcion: "Categorías y sus fotos de portada." },
+  { href: "/admin/envios", label: "Envíos", descripcion: "Tarifas de Blue Express por zona." },
+  { href: "/admin/tienda", label: "Tienda", descripcion: "Logo, color, contacto, aviso y secciones." },
+];
+
 const SECCIONES = [
+  {
+    href: "/admin/ventas",
+    label: "Ventas",
+    activaEn: ["/admin/ventas"],
+    icono: (
+      <>
+        <path d="M4 4h16v16H4z" />
+        <path d="M8 15l3-3 2 2 4-5" />
+      </>
+    ),
+  },
   {
     href: "/admin/productos",
     label: "Productos",
-    icono: (
-      <path d="M4 7l8-4 8 4-8 4-8-4zM4 7v10l8 4 8-4V7M12 11v10" />
-    ),
+    activaEn: ["/admin/productos"],
+    icono: <path d="M4 7l8-4 8 4-8 4-8-4zM4 7v10l8 4 8-4V7M12 11v10" />,
   },
   {
-    href: "/admin/modelos",
-    label: "Modelos",
+    href: "/admin/clientes",
+    label: "Clientes",
+    activaEn: ["/admin/clientes"],
     icono: (
       <>
-        <rect x="6" y="2" width="12" height="20" rx="3" />
-        <path d="M11 18h2" />
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
       </>
     ),
   },
   {
-    href: "/admin/categorias",
-    label: "Categorías",
+    href: "/admin/mas",
+    label: "Más",
+    activaEn: ["/admin/mas", ...SECCIONES_MAS.map((s) => s.href)],
     icono: (
       <>
-        <rect x="3" y="3" width="7" height="7" rx="1.5" />
-        <rect x="14" y="3" width="7" height="7" rx="1.5" />
-        <rect x="3" y="14" width="7" height="7" rx="1.5" />
-        <rect x="14" y="14" width="7" height="7" rx="1.5" />
-      </>
-    ),
-  },
-  {
-    href: "/admin/envios",
-    label: "Envíos",
-    icono: (
-      <>
-        <path d="M3 7h11v9H3zM14 10h4l3 3v3h-7" />
-        <circle cx="7" cy="17.5" r="1.8" />
-        <circle cx="17" cy="17.5" r="1.8" />
-      </>
-    ),
-  },
-  {
-    href: "/admin/tienda",
-    label: "Tienda",
-    icono: (
-      <>
-        <path d="M4 10h16l-1.5-5h-13zM5 10v9h14v-9" />
-        <path d="M10 19v-5h4v5" />
+        <circle cx="5" cy="12" r="1.5" />
+        <circle cx="12" cy="12" r="1.5" />
+        <circle cx="19" cy="12" r="1.5" />
       </>
     ),
   },
@@ -63,9 +61,9 @@ export function BottomNav() {
       aria-label="Secciones del panel"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white pb-[env(safe-area-inset-bottom)]"
     >
-      <ul className="mx-auto grid max-w-[480px] grid-cols-5">
+      <ul className="mx-auto grid max-w-[480px] grid-cols-4">
         {SECCIONES.map((s) => {
-          const activa = pathname.startsWith(s.href);
+          const activa = s.activaEn.some((r) => pathname.startsWith(r));
           return (
             <li key={s.href}>
               <Link
@@ -75,7 +73,7 @@ export function BottomNav() {
                   activa ? "text-brand" : "text-ink-soft"
                 }`}
               >
-                <span className={`rounded-full px-3 py-1 ${activa ? "bg-brand-soft" : ""}`}>
+                <span className={`rounded-full px-4 py-1 ${activa ? "bg-brand-soft" : ""}`}>
                   <svg
                     width="24"
                     height="24"
