@@ -14,7 +14,11 @@ export async function generateMetadata({ params }: PageProps<"/modelo/[slug]/[va
   const { slug, variante } = await params;
   const v = await getVariante(slug, variante);
   if (!v) return {};
-  return { title: `Carcasas y accesorios para ${v.nombre}` };
+  return {
+    title: `Carcasas y accesorios para ${v.nombre}`,
+    description: `Carcasas, protectores de cámara y accesorios para ${v.nombre}. Elige tu iPhone y pide por WhatsApp.`,
+    alternates: { canonical: `/modelo/${slug}/${variante}` },
+  };
 }
 
 export default async function VariantePage({ params, searchParams }: PageProps<"/modelo/[slug]/[variante]">) {

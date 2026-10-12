@@ -10,7 +10,11 @@ export async function generateMetadata({ params }: PageProps<"/modelo/[slug]">):
   const { slug } = await params;
   const modelo = await getModelo(slug);
   if (!modelo) return {};
-  return { title: `Accesorios para ${modelo.nombre}` };
+  return {
+    title: `Carcasas y accesorios para ${modelo.nombre}`,
+    description: `Carcasas, protectores y accesorios para ${modelo.nombre} y sus versiones. Elige tu iPhone y pide por WhatsApp.`,
+    alternates: { canonical: `/modelo/${slug}` },
+  };
 }
 
 export default async function ModeloPage({ params, searchParams }: PageProps<"/modelo/[slug]">) {

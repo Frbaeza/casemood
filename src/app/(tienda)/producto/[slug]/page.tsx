@@ -6,6 +6,7 @@ import { ProductInquiry, type GrupoCompatibilidad } from "@/components/product-i
 import { getProducto } from "@/lib/catalog";
 import { getTienda } from "@/lib/configuracion";
 import { formatCLP, imgUrl } from "@/lib/format";
+import { absoluta } from "@/lib/sitio";
 
 function resumen(texto: string, max = 160) {
   const limpio = texto.replace(/\s+/g, " ").trim();
@@ -59,8 +60,32 @@ export default async function ProductoPage({ params, searchParams }: PageProps<"
     grupo.variantes.push({ id: pv.variante.id, nombre: pv.variante.nombre, disponible: pv.disponible });
   }
 
+  // Ficha para Google: nombre, fotos y precio del producto.
+  const datosGoogle = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: producto.nombre,
+    description: resumen(producto.descripcion, 500) || undefined,
+    image: producto.imagenes.map((i) => absoluta(imgUrl(i.key))),
+    category: producto.categoria.nombre,
+    url: absoluta(`/producto/${producto.slug}`),
+    offers: {
+      "@type": "Offer",
+      price: producto.precio,
+      priceCurrency: "CLP",
+      availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
+      url: absoluta(`/producto/${producto.slug}`),
+      seller: { "@type": "Organization", name: tienda.nombre },
+    },
+  };
+
   return (
     <div className="pt-3 pb-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(datosGoogle).replace(/</g, "\\u003c") }}
+      />
       <BackLink href={`/categoria/${producto.categoria.slug}`} historial>
         Volver
       </BackLink>

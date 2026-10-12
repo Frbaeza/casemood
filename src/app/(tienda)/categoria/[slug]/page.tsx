@@ -17,7 +17,13 @@ import { leerOrden } from "@/lib/catalog-orden";
 export async function generateMetadata({ params }: PageProps<"/categoria/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const categoria = (await getCategoriasConProductos()).find((c) => c.slug === slug);
-  return categoria ? { title: categoria.nombre } : {};
+  if (!categoria) return {};
+  const { nombre } = await getTienda();
+  return {
+    title: categoria.nombre,
+    description: `${categoria.nombre} en ${nombre}. Mira todos los productos y pide por WhatsApp.`,
+    alternates: { canonical: `/categoria/${categoria.slug}` },
+  };
 }
 
 export default async function CategoriaPage({ params, searchParams }: PageProps<"/categoria/[slug]">) {
