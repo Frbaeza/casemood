@@ -1,3 +1,4 @@
+import { BarraPedido } from "@/components/barra-pedido";
 import { RegistroNavegacion } from "@/components/registro-navegacion";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -20,6 +21,7 @@ export default async function TiendaLayout({ children }: LayoutProps<"/">) {
       )}
       <main className="mx-auto w-full max-w-[480px] flex-1 px-4 pb-10">{children}</main>
       <SiteFooter tienda={tienda} regionesEnvio={regionesEnvio} />
+      <BarraPedido />
     </>
   );
 }

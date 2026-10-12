@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BotonCarrito } from "@/components/boton-carrito";
 import { MenuCuenta } from "@/components/menu-cuenta";
 import type { Tienda } from "@/lib/tienda";
 
@@ -24,7 +25,10 @@ export function SiteHeader({ tienda, cliente }: { tienda: Tienda; cliente: strin
             <span className="mt-0.5 block truncate text-sm text-ink-soft">{tienda.frase}</span>
           </span>
         </Link>
-        <MenuCuenta nombre={cliente} />
+        <div className="ml-2 flex shrink-0 items-center gap-2">
+          <BotonCarrito />
+          <MenuCuenta nombre={cliente} />
+        </div>
       </div>
     </header>
   );

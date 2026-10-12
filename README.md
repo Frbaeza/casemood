@@ -29,7 +29,8 @@ que la dueña administre todo desde el celular, sin depender de nadie.
 - **"¿Qué iPhone tienes?"**: se elige el modelo una vez y el catálogo muestra solo lo compatible (los modelos sin stock
   aparecen en gris). La tienda recuerda el modelo en las siguientes visitas.
 - **Búsqueda y filtros** por categoría, orden por precio o novedad y paginación.
-- **Pedido por WhatsApp** con un mensaje ya escrito que incluye el producto y el modelo del cliente.
+- **Carrito**: el cliente suma productos (con su iPhone y cantidad) desde el listado o la ficha, y envía un solo pedido por WhatsApp con el detalle y el total. Se guarda en el navegador y al abrirlo se actualizan los precios vigentes.
+- **Consulta por WhatsApp** con un mensaje ya escrito que incluye el producto y el modelo del cliente.
 - **Diseña tu carcasa**: el cliente sube una foto y ve al instante cómo quedaría impresa en la carcasa de su modelo,
   la mueve con el dedo, la agranda y comparte la vista previa por WhatsApp. Los contornos salen de las plantillas de
   sublimación reales de la tienda (26 modelos, del iPhone 11 al 17 Pro Max). Todo ocurre en el navegador: la foto

@@ -16,6 +16,13 @@ const tarjetaSelect = {
   precio: true,
   creadoEn: true,
   imagenes: { select: { key: true }, orderBy: { orden: "asc" }, take: 1 },
+  // Para "Agregar" desde la tarjeta: universal (0), un solo iPhone (se agrega directo) o varios (hay que elegir).
+  _count: { select: { variantes: true } },
+  variantes: {
+    where: { disponible: true, variante: { activo: true } },
+    take: 2,
+    select: { variante: { select: { nombre: true } } },
+  },
 } satisfies Prisma.ProductoSelect;
 
 export type ProductoTarjeta = Prisma.ProductoGetPayload<{ select: typeof tarjetaSelect }>;

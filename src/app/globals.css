@@ -41,7 +41,7 @@ body {
 
 /* Si la página tiene el botón fijo de WhatsApp, el footer deja espacio para no quedar tapado. */
 body:has([data-fixed-cta]) footer {
-  padding-bottom: 8.5rem;
+  padding-bottom: 12rem;
 }
 
 /* Foco visible y grueso para navegación con teclado */

@@ -100,7 +100,7 @@ export default async function VariantePage({ params, searchParams }: PageProps<"
                 <OrdenSelect ruta={baseHref} params={{ categoria: categoriaActiva?.slug }} valor={orden} />
               )}
             </div>
-            <ProductGrid productos={productos} varianteId={variante.id} />
+            <ProductGrid productos={productos} varianteId={variante.id} varianteNombre={variante.nombre} />
           </>
         )}
       </div>

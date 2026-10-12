@@ -79,6 +79,7 @@ export default async function ProductoPage({ params, searchParams }: PageProps<"
 
       <ProductInquiry
         producto={producto.nombre}
+        item={{ productoId: producto.id, slug: producto.slug, precio: producto.precio, imagen: producto.imagenes[0]?.key ?? null }}
         grupos={grupos}
         whatsapp={tienda.whatsapp}
         varianteDesdeUrl={varianteDesdeUrl}

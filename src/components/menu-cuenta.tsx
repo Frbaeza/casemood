@@ -6,8 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import { salirDeLaCuenta } from "@/app/(tienda)/cuenta/acciones";
 import { IconUser } from "@/components/icons";
 
+// Solo el ícono de persona (con nombre accesible para lectores de pantalla).
 const boton =
-  "flex min-h-12 shrink-0 items-center gap-1.5 rounded-xl border-2 border-orange/30 bg-white/70 px-3 text-base font-semibold text-ink active:bg-white";
+  "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 border-orange/30 bg-white/70 text-ink active:bg-white";
 const opcion = "flex min-h-14 w-full items-center px-4 text-left text-base font-semibold text-ink active:bg-surface";
 
 /** "Mi cuenta": sin sesión lleva a entrar; con sesión despliega Mis datos, Historial de compras y Cerrar sesión. */
@@ -35,30 +36,28 @@ export function MenuCuenta({ nombre }: { nombre: string | null }) {
 
   if (nombre === null) {
     return (
-      <Link href="/cuenta/entrar" className={`ml-2 ${boton}`}>
-        <IconUser className="h-5 w-5 text-orange" />
-        Mi cuenta
+      <Link href="/cuenta/entrar" aria-label="Mi cuenta: entrar o crear cuenta" className={boton}>
+        <IconUser className="h-6 w-6 text-orange" />
       </Link>
     );
   }
 
   return (
-    <div ref={ref} className="relative ml-2">
+    <div ref={ref} className="relative">
       <button
         type="button"
         aria-expanded={visible}
         aria-controls="menu-cuenta"
+        aria-label={`Mi cuenta (${nombre.split(" ")[0]})`}
         onClick={() => {
           setAbierto(!visible);
           setRutaAbierta(pathname);
         }}
         className={boton}
       >
-        <IconUser className="h-5 w-5 text-orange" />
-        Mi cuenta
-        <svg viewBox="0 0 24 24" className={`h-4 w-4 transition-transform ${visible ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
-          <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <IconUser className="h-6 w-6 text-orange" />
+        {/* Punto que indica sesión iniciada */}
+        <span aria-hidden className="absolute -right-1 -bottom-1 h-3.5 w-3.5 rounded-full bg-whatsapp ring-2 ring-cream" />
       </button>
       {visible && (
         <div
