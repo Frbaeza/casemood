@@ -27,3 +27,6 @@ INSTAGRAM_USERNAME=casemood_.cl
 # Link de acceso por correo para clientes (https://resend.com). Vacío = solo Google.
 AUTH_RESEND_KEY=
 AUTH_EMAIL_FROM=Casemood <acceso@casemood.cl>
+
+# Visitas en admin → Análisis (Cloudflare Web Analytics). Token con permiso "Account Analytics: Read".
+CF_ANALYTICS_TOKEN=

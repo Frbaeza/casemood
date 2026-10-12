@@ -17,13 +17,26 @@ const compacto = (n: number) =>
   n >= 1_000_000 ? `${(n / 1_000_000).toLocaleString("es-CL", { maximumFractionDigits: 1 })} M` : n >= 1000 ? `${Math.round(n / 1000)} mil` : String(n);
 
 /**
- * Ventas en el tiempo: columnas de un solo color con eje de 3 marcas.
+ * Ventas (o visitas) en el tiempo: columnas de un solo color con eje de 3 marcas.
  * Tocar o pasar el mouse sobre una columna muestra su detalle; también hay vista de tabla.
  */
-export function GraficoColumnas({ puntos, titulo }: { puntos: Punto[]; titulo: string }) {
+export function GraficoColumnas({
+  puntos,
+  titulo,
+  modo = "ventas",
+}: {
+  puntos: Punto[];
+  titulo: string;
+  /** "visitas": total = visitas y ventas = páginas vistas. */
+  modo?: "ventas" | "visitas";
+}) {
+  const visitas = modo === "visitas";
+  const formatoTotal = (n: number) => (visitas ? `${n.toLocaleString("es-CL")} ${n === 1 ? "visita" : "visitas"}` : formatCLP(n));
+  const detalle = (n: number) =>
+    visitas ? `${n.toLocaleString("es-CL")} ${n === 1 ? "página vista" : "páginas vistas"}` : `${n} ${n === 1 ? "venta" : "ventas"}`;
   const [activo, setActivo] = useState<number | null>(null);
   const [tabla, setTabla] = useState(false);
-  const max = techo(Math.max(...puntos.map((p) => p.total)));
+  const max = visitas ? Math.max(5, techo(Math.max(...puntos.map((p) => p.total)))) : techo(Math.max(...puntos.map((p) => p.total)));
   const ancho = 320;
   const alto = 160;
   const izq = 40; // espacio para el eje
@@ -40,7 +53,7 @@ export function GraficoColumnas({ puntos, titulo }: { puntos: Punto[]; titulo: s
       <p className="min-h-6 text-base" aria-live="polite">
         {sel ? (
           <>
-            <strong>{sel.titulo}</strong>: {formatCLP(sel.total)} · {sel.ventas} {sel.ventas === 1 ? "venta" : "ventas"}
+            <strong>{sel.titulo}</strong>: {formatoTotal(sel.total)} · {detalle(sel.ventas)}
           </>
         ) : (
           <span className="text-ink-soft">Toca una columna para ver el detalle.</span>
@@ -106,8 +119,8 @@ export function GraficoColumnas({ puntos, titulo }: { puntos: Punto[]; titulo: s
           <thead>
             <tr className="text-left text-sm text-ink-soft">
               <th className="py-1 font-semibold">Fecha</th>
-              <th className="py-1 text-right font-semibold">Ventas</th>
-              <th className="py-1 text-right font-semibold">Total</th>
+              <th className="py-1 text-right font-semibold">{visitas ? "Páginas vistas" : "Ventas"}</th>
+              <th className="py-1 text-right font-semibold">{visitas ? "Visitas" : "Total"}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line tabular-nums">
@@ -117,7 +130,7 @@ export function GraficoColumnas({ puntos, titulo }: { puntos: Punto[]; titulo: s
                 <tr key={p.clave}>
                   <td className="py-1.5">{p.titulo}</td>
                   <td className="py-1.5 text-right">{p.ventas}</td>
-                  <td className="py-1.5 text-right">{formatCLP(p.total)}</td>
+                  <td className="py-1.5 text-right">{visitas ? p.total.toLocaleString("es-CL") : formatCLP(p.total)}</td>
                 </tr>
               ))}
           </tbody>

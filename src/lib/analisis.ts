@@ -15,8 +15,8 @@ export function leerPeriodo(v: unknown): Periodo {
   return typeof v === "string" && v in PERIODOS ? (v as Periodo) : "30d";
 }
 
-type Rango = { gte: Date; lt: Date };
-type Agrupacion = "dia" | "semana" | "mes";
+export type Rango = { gte: Date; lt: Date };
+export type Agrupacion = "dia" | "semana" | "mes";
 
 const sumarMes = (dia: string, meses: number) => {
   const [a, m] = dia.split("-").map(Number);
@@ -25,7 +25,7 @@ const sumarMes = (dia: string, meses: number) => {
 };
 
 /** Rango del período, el período anterior de igual largo (para comparar) y cómo agrupar el gráfico. */
-function rangos(p: Periodo): { actual: Rango; anterior: Rango; agrupar: Agrupacion } {
+export function rangos(p: Periodo): { actual: Rango; anterior: Rango; agrupar: Agrupacion } {
   const hoy = diaChile();
   const manana = inicioDiaChile(hoy, 1);
   if (p === "mes") {
@@ -48,7 +48,7 @@ function rangos(p: Periodo): { actual: Rango; anterior: Rango; agrupar: Agrupaci
 const MES_CORTO = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
 /** Columnas vacías del período (para que los días sin ventas también aparezcan). */
-function columnas(r: Rango, agrupar: Agrupacion): { clave: string; etiqueta: string; titulo: string; desde: string }[] {
+export function columnas(r: Rango, agrupar: Agrupacion): { clave: string; etiqueta: string; titulo: string; desde: string }[] {
   const lista: { clave: string; etiqueta: string; titulo: string; desde: string }[] = [];
   const finDia = diaChile(new Date(r.lt.getTime() - 1));
   let dia = diaChile(r.gte);

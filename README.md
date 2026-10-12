@@ -43,7 +43,7 @@ que la dueña administre todo desde el celular, sin depender de nadie.
 ### Para la tienda (panel `/admin`)
 
 - **Registro de ventas** desde el celular: cliente con cuenta o genérico, productos por categoría → iPhone → foto, medio de pago y canal; resumen de ventas, ticket promedio y lo más vendido. Las ventas se pueden anular o reasignar.
-- **Análisis**: ventas en el tiempo, comparación con el período anterior, lo más vendido, iPhone más vendido en cada categoría, canales, medios de pago, clientes recurrentes, edades y cumpleaños del mes (con saludo por WhatsApp).
+- **Análisis**: visitas a la tienda (Cloudflare Web Analytics, sin cookies: lo más visto, de dónde llegan y desde qué equipo), ventas en el tiempo, comparación con el período anterior, lo más vendido, iPhone más vendido en cada categoría, canales, medios de pago, clientes recurrentes, edades y cumpleaños del mes (con saludo por WhatsApp).
 - Productos con fotos tomadas desde el celular (se comprimen a WebP en el navegador antes de subirlas), precio,
   categoría y compatibilidad por modelo con disponibilidad.
 - Filtros por categoría y por modelo de iPhone, vista en cuadrícula igual a la del catálogo.

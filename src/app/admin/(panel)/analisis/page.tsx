@@ -4,15 +4,17 @@ import { Barras, Bloque, formatCompacto, Indicador } from "@/components/admin/gr
 import { IconWhatsApp } from "@/components/icons";
 import { getAnalisis, leerPeriodo, PERIODOS, type Periodo } from "@/lib/analisis";
 import { getTienda } from "@/lib/configuracion";
+import { getVisitas } from "@/lib/visitas";
 import { formatCLP, whatsappUrl } from "@/lib/format";
 import { CLIENTE_GENERICO } from "@/lib/ventas";
 
 export default async function AnalisisPage({ searchParams }: PageProps<"/admin/analisis">) {
   const { p } = await searchParams;
   const periodo = leerPeriodo(p);
-  const [a, tienda] = await Promise.all([getAnalisis(periodo), getTienda()]);
+  const [a, tienda, v] = await Promise.all([getAnalisis(periodo), getTienda(), getVisitas(periodo)]);
   const sinVentas = a.kpis.cantidad.actual === 0;
   const unidades = (n: number) => `${n} ${n === 1 ? "unidad" : "unidades"}`;
+  const visitasTexto = (n: number) => `${n.toLocaleString("es-CL")} ${n === 1 ? "visita" : "visitas"}`;
 
   return (
     <div className="space-y-4">
@@ -53,6 +55,41 @@ export default async function AnalisisPage({ searchParams }: PageProps<"/admin/a
       >
         <GraficoColumnas puntos={a.serie} titulo={`Ventas por ${a.agrupar === "mes" ? "mes" : a.agrupar === "semana" ? "semana" : "día"}`} />
       </Bloque>
+
+      {v && (
+        <Bloque titulo="Visitas a la tienda" subtitulo="Personas que entraron al sitio, sin contar el panel. Cifras aproximadas: Cloudflare mide con una muestra.">
+          {v.error ? (
+            <p className="text-base text-ink-soft">No se pudieron cargar las visitas en este momento. Intenta más tarde.</p>
+          ) : (
+            <div className="space-y-5">
+              {v.recortado && (
+                <p className="rounded-2xl bg-surface p-3 text-sm text-ink-soft">Las visitas muestran los últimos 3 meses (es lo máximo que entrega Cloudflare).</p>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                <Indicador etiqueta="Visitas" actual={v.visitas.actual} anterior={v.visitas.anterior} />
+                <Indicador etiqueta="Páginas vistas" actual={v.vistas.actual} anterior={v.vistas.anterior} />
+              </div>
+              <GraficoColumnas
+                puntos={v.serie}
+                modo="visitas"
+                titulo={`Visitas por ${v.agrupar === "mes" ? "mes" : v.agrupar === "semana" ? "semana" : "día"}`}
+              />
+              <div>
+                <p className="mb-2 text-base font-semibold">Lo más visto</p>
+                <Barras filas={v.paginas} formato={(n) => `${n.toLocaleString("es-CL")} ${n === 1 ? "vista" : "vistas"}`} vacio="Aún no hay visitas en este período." />
+              </div>
+              <div>
+                <p className="mb-2 text-base font-semibold">De dónde llegan</p>
+                <Barras filas={v.origen} formato={visitasTexto} vacio="Aún no hay visitas en este período." />
+              </div>
+              <div>
+                <p className="mb-2 text-base font-semibold">Desde qué equipo</p>
+                <Barras filas={v.dispositivos} formato={visitasTexto} vacio="Aún no hay visitas en este período." />
+              </div>
+            </div>
+          )}
+        </Bloque>
+      )}
 
       <Bloque titulo="Lo más vendido" subtitulo="Por monto vendido">
         <Barras filas={a.productos} />

@@ -33,7 +33,10 @@
   // se cargan con `wrangler secret put` y en local desde .dev.vars.
   "vars": {
     "STORE_NAME": "Casemood",
-    "INSTAGRAM_USERNAME": "casemood_.cl"
+    "INSTAGRAM_USERNAME": "casemood_.cl",
+    // Cloudflare Web Analytics (visitas en admin → Análisis). El token va como secreto: CF_ANALYTICS_TOKEN.
+    "ANALYTICS_ACCOUNT_ID": "0d9311d8fd6ee849a5be353a5525148c",
+    "CF_WEB_ANALYTICS_SITE": "97593813510246bba0153ff513b94d3c"
   },
   "observability": {
     "enabled": true
